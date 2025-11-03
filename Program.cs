@@ -66,5 +66,6 @@ app.UseHttpsRedirection();
 app.UseAuthorization();
 
 app.MapControllers(); //  Important to map controllers
-
+var port = Environment.GetEnvironmentVariable("PORT") ?? "8080";
+app.Run($"http://0.0.0.0:{port}");
 app.Run();
