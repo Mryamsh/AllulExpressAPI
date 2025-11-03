@@ -66,6 +66,7 @@ app.UseHttpsRedirection();
 app.UseAuthorization();
 
 app.MapControllers();
+app.MapGet("/", () => "AllulExpressAPI is running!");
 var port = Environment.GetEnvironmentVariable("PORT") ?? "5000";
 Console.WriteLine($"Starting API on http://0.0.0.0:{port}");
 app.Run($"http://0.0.0.0:{port}");
