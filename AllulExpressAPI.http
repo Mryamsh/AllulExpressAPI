@@ -1,0 +1,6 @@
+@AllulExpressAPI_HostAddress = http://localhost:5046
+
+GET {{AllulExpressAPI_HostAddress}}/weatherforecast/
+Accept: application/json
+
+###
