@@ -43,7 +43,7 @@ public class LoginController : ControllerBase
         }
 
 
-        // 2️⃣ generate JWT
+        //  generate JWT
         var token = _tokenService.GenerateToken(user);
 
         // 3️⃣ save in ValidTokens
@@ -58,4 +58,21 @@ public class LoginController : ControllerBase
         // 4️⃣ return token & role
         return Ok(new { Token = token, Role = user.Role, user.Email, user.Language });
     }
+
+
+    [HttpGet("validate-token")]
+    public async Task<IActionResult> ValidateToken([FromQuery] string token)
+    {
+        var tokenRecord = await _db.ValidTokens
+            .FirstOrDefaultAsync(t => t.Token == token);
+
+        if (tokenRecord == null)
+            return Unauthorized(new { valid = false, reason = "Token not found" });
+
+        if (tokenRecord.ExpiresAt < DateTime.UtcNow)
+            return Unauthorized(new { valid = false, reason = "Token expired" });
+
+        return Ok(new { valid = true });
+    }
+
 }
