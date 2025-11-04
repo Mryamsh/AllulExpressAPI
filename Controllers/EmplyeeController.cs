@@ -19,7 +19,7 @@ public class EmployeesController : ControllerBase
     }
 
     // POST: api/employees
-    [HttpPost]
+    [HttpPost("addemployee")]
     public async Task<ActionResult<Employees>> AddEmployee([FromBody] Employees employee)
     {
         if (!ModelState.IsValid)
