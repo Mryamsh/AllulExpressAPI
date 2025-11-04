@@ -2,9 +2,11 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using AllulExpressApi.Data;
 using AllulExpressApi.Models;
+using Microsoft.AspNetCore.Authorization;
 
 [ApiController]
 [Route("api/[controller]")]
+[Authorize]
 public class ClientController : ControllerBase
 {
     private readonly AppDbContext _context;
@@ -15,7 +17,7 @@ public class ClientController : ControllerBase
     }
 
     // GET: api/client
-    [HttpGet]
+    [HttpGet("allclients")]
     public async Task<ActionResult<IEnumerable<Clients>>> GetClients()
     {
         // Include posts
@@ -26,7 +28,7 @@ public class ClientController : ControllerBase
     }
 
     // GET: api/client/5
-    [HttpGet("{id}")]
+    [HttpGet("get/{id}")]
     public async Task<ActionResult<Clients>> GetClient(int id)
     {
         var client = await _context.Clients
@@ -40,7 +42,7 @@ public class ClientController : ControllerBase
     }
 
     // POST: api/client
-    [HttpPost]
+    [HttpPost("addclients")]
     public async Task<ActionResult<Clients>> AddClient([FromBody] Clients client)
     {
         if (!ModelState.IsValid)
@@ -62,7 +64,7 @@ public class ClientController : ControllerBase
     }
 
     // PUT: api/client/5
-    [HttpPut("{id}")]
+    [HttpPut("updateclient/{id}")]
     public async Task<IActionResult> UpdateClient(int id, [FromBody] Clients updated)
     {
         if (id != updated.Id)
@@ -99,7 +101,7 @@ public class ClientController : ControllerBase
     }
 
     // PUT: api/client/5/enable
-    [HttpPut("{id}/enable")]
+    [HttpPut("clientstatus{id}/enable")]
     public async Task<IActionResult> ToggleClientStatus(int id, [FromBody] bool enabled)
     {
         var client = await _context.Clients.FindAsync(id);
