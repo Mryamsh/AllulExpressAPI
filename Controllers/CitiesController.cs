@@ -2,9 +2,11 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using AllulExpressApi.Data;
 using AllulExpressApi.Models;
+using Microsoft.AspNetCore.Authorization;
 
 [ApiController]
 [Route("api/[controller]")]
+[Authorize]
 public class CityController : ControllerBase
 {
     private readonly AppDbContext _context;
@@ -15,7 +17,7 @@ public class CityController : ControllerBase
     }
 
 
-    [HttpGet]
+    [HttpGet("allcities")]
     public async Task<ActionResult<IEnumerable<Cities>>> GetAllCityFees()
     {
         var cityFees = await _context.Cities
@@ -24,7 +26,7 @@ public class CityController : ControllerBase
         return Ok(cityFees);
     }
 
-    [HttpGet("{id}")]
+    [HttpGet("getcity/{id}")]
     public async Task<ActionResult<Cities>> GetCityFee(int id)
     {
         var cityFee = await _context.Cities
@@ -38,7 +40,7 @@ public class CityController : ControllerBase
     }
 
 
-    [HttpPost]
+    [HttpPost("addcity")]
     public async Task<ActionResult<Cities>> AddCityFee([FromBody] Cities newCityFee)
     {
         if (!ModelState.IsValid)
@@ -50,7 +52,7 @@ public class CityController : ControllerBase
         return CreatedAtAction(nameof(GetCityFee), new { id = newCityFee.Id }, newCityFee);
     }
 
-    [HttpPut("{id}")]
+    [HttpPut("update/{id}")]
     public async Task<IActionResult> UpdateCityFee(int id, [FromBody] Cities updated)
     {
         if (id != updated.Id)
