@@ -94,7 +94,7 @@ public class EmployeesController : ControllerBase
         return Ok(employeeDto);
     }
 
-    [HttpGet]
+    [HttpGet("getemployees")]
     public async Task<ActionResult> GetAllEmployees()
     {
         var employees = await _context.Employees
