@@ -109,6 +109,7 @@ public class EmployeesController : ControllerBase
                 e.IDimageback,
                 e.Phonenum1,
                 e.Phonenum2,
+                e.Savedate,
                 e.Language,
                 e.Note,
                 e.Enabled
