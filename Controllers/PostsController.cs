@@ -15,7 +15,7 @@ public class PostsController : ControllerBase
     }
 
     // ✅ Get all posts (with client info)
-    [HttpGet]
+    [HttpGet("getposts")]
     public async Task<ActionResult<IEnumerable<Posts>>> GetAllPosts()
     {
         var posts = await _context.Posts
@@ -39,8 +39,8 @@ public class PostsController : ControllerBase
         return Ok(post);
     }
 
-    // ✅ Create new post
-    [HttpPost]
+
+    [HttpPost("addposts")]
     public async Task<ActionResult<Posts>> CreatePost([FromBody] Posts post)
     {
         // Check if the client exists
