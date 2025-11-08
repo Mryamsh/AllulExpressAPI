@@ -15,7 +15,7 @@ public class DriversController : ControllerBase
     }
 
     // ✅ GET all drivers
-    [HttpGet]
+    [HttpGet("getdrivers")]
     public async Task<ActionResult<IEnumerable<Drivers>>> GetDrivers()
     {
         var drivers = await _context.Drivers
