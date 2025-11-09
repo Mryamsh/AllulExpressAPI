@@ -55,11 +55,11 @@ if (app.Environment.IsDevelopment())
     app.UseSwaggerUI();
 }
 app.UseCors("AllowAll");
-
+app.UseStaticFiles();
 app.UseAuthentication();
 app.UseAuthorization();
 app.UseHttpsRedirection();
-app.UseStaticFiles();
+
 
 
 app.MapControllers();
