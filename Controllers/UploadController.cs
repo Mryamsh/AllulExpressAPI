@@ -52,4 +52,16 @@ public class UploadController : ControllerBase
 
         return Ok(new { imageUrl = fileUrl });
     }
+
+
+    [HttpGet("getimage/{filename}")]
+    public IActionResult GetImage(string filename)
+    {
+        var uploadsPath = Path.Combine(_env.ContentRootPath, "ProtectedUploads", filename);
+        if (!System.IO.File.Exists(uploadsPath))
+            return NotFound();
+
+        var fileBytes = System.IO.File.ReadAllBytes(uploadsPath);
+        return File(fileBytes, "image/jpeg");
+    }
 }
