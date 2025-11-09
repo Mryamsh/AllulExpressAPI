@@ -54,12 +54,16 @@ if (app.Environment.IsDevelopment())
     app.UseSwagger();
     app.UseSwaggerUI();
 }
-app.UseCors("AllowAll");
-app.UseStaticFiles();
-app.UseAuthentication();
-app.UseAuthorization();
+
+
 app.UseHttpsRedirection();
 
+app.UseStaticFiles();
+
+app.UseCors("AllowAll");
+
+app.UseAuthentication();
+app.UseAuthorization();
 
 
 app.MapControllers();
