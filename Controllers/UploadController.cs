@@ -1,47 +1,55 @@
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
 [Route("api/[controller]")]
 [ApiController]
+[Authorize]
 public class UploadController : ControllerBase
 {
-    private readonly IWebHostEnvironment _environment;
+    private readonly IWebHostEnvironment _env;
+    private readonly ILogger<UploadController> _logger;
+    // allowed mime types
+    private static readonly HashSet<string> permittedExtensions = new() { ".jpg", ".jpeg", ".png", ".webp" };
+    private const long MaxFileSize = 5 * 1024 * 1024; // 5 MB
 
-    public UploadController(IWebHostEnvironment environment)
+    public UploadController(IWebHostEnvironment env, ILogger<UploadController> logger)
     {
-        _environment = environment;
+        _env = env;
+        _logger = logger;
     }
 
-    [HttpPost("uploadimage")]
-    public async Task<IActionResult> UploadImage(IFormFile file)
+    [HttpPost("upload-image")]
+    public async Task<IActionResult> UploadImage([FromForm] IFormFile file)
     {
         if (file == null || file.Length == 0)
-            return BadRequest("No file uploaded.");
+            return BadRequest(new { message = "No file uploaded" });
 
-        try
+        if (file.Length > MaxFileSize)
+            return BadRequest(new { message = "File too large" });
+
+        var ext = Path.GetExtension(file.FileName).ToLowerInvariant();
+        if (string.IsNullOrEmpty(ext) || !permittedExtensions.Contains(ext))
+            return BadRequest(new { message = "Invalid file type" });
+
+        // Create uploads folder under wwwroot
+        var uploadsRoot = Path.Combine(_env.WebRootPath ?? Path.Combine(Directory.GetCurrentDirectory(), "wwwroot"), "uploads");
+        if (!Directory.Exists(uploadsRoot)) Directory.CreateDirectory(uploadsRoot);
+
+        // Use GUID filename to avoid collisions
+        var fileName = $"{Guid.NewGuid()}{ext}";
+        var filePath = Path.Combine(uploadsRoot, fileName);
+
+        // Save file
+        await using (var stream = System.IO.File.Create(filePath))
         {
-            // Use WebRootPath if available, otherwise fallback
-            var uploadsFolder = Path.Combine(_environment.WebRootPath ?? Path.Combine(Directory.GetCurrentDirectory(), "wwwroot"), "uploads");
-
-            if (!Directory.Exists(uploadsFolder))
-                Directory.CreateDirectory(uploadsFolder);
-
-            var fileName = Guid.NewGuid().ToString() + Path.GetExtension(file.FileName);
-            var filePath = Path.Combine(uploadsFolder, fileName);
-
-            using (var stream = new FileStream(filePath, FileMode.Create))
-            {
-                await file.CopyToAsync(stream);
-            }
-
-            var baseUrl = $"{Request.Scheme}://{Request.Host}";
-            var fileUrl = $"{baseUrl}/uploads/{fileName}";
-
-            return Ok(new { url = fileUrl });
+            await file.CopyToAsync(stream);
         }
-        catch (Exception ex)
-        {
-            return StatusCode(500, new { message = ex.Message });
-        }
+
+        // Build accessible URL
+        var requestScheme = Request.Scheme;
+        var host = Request.Host.Value;
+        var fileUrl = $"{requestScheme}://{host}/uploads/{fileName}";
+
+        return Ok(new { imageUrl = fileUrl });
     }
-
 }
