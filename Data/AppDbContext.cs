@@ -42,10 +42,10 @@ namespace AllulExpressApi.Data
             .HasOne(p => p.Client)
             .WithMany(c => c.Posts)
             .HasForeignKey(p => p.ClientId);
-            modelBuilder.Entity<Posts>()
-            .HasOne(p => p.Driver)
-            .WithMany(d => d.Posts)
-            .HasForeignKey(p => p.DriverId);
+            // modelBuilder.Entity<Posts>()
+            // .HasOne(p => p.Driver)
+            // .WithMany(d => d.Posts)
+            // .HasForeignKey(p => p.DriverId);
 
 
         }
