@@ -52,7 +52,7 @@ public class PostsController : ControllerBase
         _context.Posts.Add(post);
         await _context.SaveChangesAsync();
 
-        // ✅ Activate the assigned driver
+        //  Activate the assigned driver
         // if (post.DriverId.HasValue)
         // {
         //     var driver = await _context.Drivers.FindAsync(post.DriverId.Value);
