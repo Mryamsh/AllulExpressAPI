@@ -53,16 +53,16 @@ public class PostsController : ControllerBase
         await _context.SaveChangesAsync();
 
         // ✅ Activate the assigned driver
-        if (post.DriverId.HasValue)
-        {
-            var driver = await _context.Drivers.FindAsync(post.DriverId.Value);
-            if (driver != null && !driver.IsActive)
-            {
-                driver.IsActive = true;
-                _context.Drivers.Update(driver);
-                await _context.SaveChangesAsync();
-            }
-        }
+        // if (post.DriverId.HasValue)
+        // {
+        //     var driver = await _context.Drivers.FindAsync(post.DriverId.Value);
+        //     if (driver != null && !driver.IsActive)
+        //     {
+        //         driver.IsActive = true;
+        //         _context.Drivers.Update(driver);
+        //         await _context.SaveChangesAsync();
+        //     }
+        // }
 
         return CreatedAtAction(nameof(GetPostById), new { id = post.Id }, post);
     }
