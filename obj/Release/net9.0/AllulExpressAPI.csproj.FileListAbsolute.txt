@@ -167,3 +167,4 @@
 /Users/mryamshukur/API/AllulExpressPostAPI/AllulExpressAPI/obj/Release/net9.0/AllulExpressAPI.pdb
 /Users/mryamshukur/API/AllulExpressPostAPI/AllulExpressAPI/obj/Release/net9.0/AllulExpressAPI.genruntimeconfig.cache
 /Users/mryamshukur/API/AllulExpressPostAPI/AllulExpressAPI/obj/Release/net9.0/ref/AllulExpressAPI.dll
+/Users/mryamshukur/API/AllulExpressPostAPI/AllulExpressAPI/bin/Release/net9.0/AllulExpressAPI.staticwebassets.runtime.json
