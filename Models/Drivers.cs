@@ -29,7 +29,6 @@ namespace AllulExpressApi.Models
 
         public string? Language { get; set; }
 
-        public List<Posts> Posts { get; set; } = new();
 
 
     }
