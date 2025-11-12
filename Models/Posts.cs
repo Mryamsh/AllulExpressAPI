@@ -24,9 +24,9 @@ namespace AllulExpressApi.Models
         [JsonIgnore]
         public Clients? Client { get; set; }
 
-        public int? DriverId { get; set; }
-        [JsonIgnore]
-        public Drivers? Driver { get; set; }
+        // public int? DriverId { get; set; }
+        // [JsonIgnore]
+        // public Drivers? Driver { get; set; }
 
 
 
