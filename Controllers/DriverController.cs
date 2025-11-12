@@ -130,6 +130,24 @@ public class DriversController : ControllerBase
 
         return Ok(new { message = "Driver updated successfully", driver });
     }
+    [HttpGet("drivers-by-city/{cityName}")]
+    public async Task<IActionResult> GetDriversByCity(string cityName)
+    {
+        var drivers = await _context.Drivers
+            .Where(d => d.Cities.Any(c => c.City == cityName))
+            .Select(d => new
+            {
+                d.Id,
+                d.Name,
+                d.Phonenum1,
+                d.Phonenum2,
+                d.Email
+            })
+            .ToListAsync();
+
+        return Ok(drivers);
+    }
+
 
     [HttpPut("{id}/toggle")]
     public async Task<IActionResult> ToggleDriver(int id)

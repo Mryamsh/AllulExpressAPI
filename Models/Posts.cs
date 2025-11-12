@@ -19,10 +19,12 @@ namespace AllulExpressApi.Models
         public DateTime Savedate { get; set; }
         public string Note { get; set; } = string.Empty;
         public int ClientId { get; set; }
-
+        public int? DriverId { get; set; }
         // Navigation property
         [JsonIgnore]
         public Clients? Client { get; set; }
+        [JsonIgnore]
+        public Drivers? driver { get; set; }
 
 
 
