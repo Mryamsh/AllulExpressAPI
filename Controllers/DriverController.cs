@@ -39,8 +39,8 @@ public class DriversController : ControllerBase
     }
 
     //  POST: add new driver
-    [HttpPost]
-    [HttpPost]
+
+    [HttpPost("adddriver")]
     public async Task<ActionResult<Drivers>> AddDriver([FromBody] Drivers driver)
     {
         if (!ModelState.IsValid)
