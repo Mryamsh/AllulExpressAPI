@@ -20,6 +20,8 @@ public class PostsController : ControllerBase
     {
         var posts = await _context.Posts
             .Include(p => p.Client)
+            .Include(p => p.driver)
+
             .ToListAsync();
 
         return Ok(posts);
@@ -53,9 +55,9 @@ public class PostsController : ControllerBase
         await _context.SaveChangesAsync();
 
         //  Activate the assigned driver
-        // if (post.DriverId.HasValue)
+        // if (post.DriverID.HasValue)
         // {
-        //     var driver = await _context.Drivers.FindAsync(post.DriverId.Value);
+        //     var driver = await _context.Drivers.FindAsync(post.DriverID.Value);
         //     if (driver != null && !driver.IsActive)
         //     {
         //         driver.IsActive = true;
