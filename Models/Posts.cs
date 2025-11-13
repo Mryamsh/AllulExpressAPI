@@ -23,7 +23,7 @@ namespace AllulExpressApi.Models
         // Navigation property
         [JsonIgnore]
         public Clients? Client { get; set; }
-        public int DriverID { get; set; }
+        public int? DriverID { get; set; }
 
         // Navigation property
         [JsonIgnore]

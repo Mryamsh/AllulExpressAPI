@@ -1,10 +1,12 @@
 using AllulExpressApi.Data;
 using AllulExpressApi.Models;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 
 [Route("api/[controller]")]
 [ApiController]
+[Authorize]
 public class PostsController : ControllerBase
 {
     private readonly AppDbContext _context;
@@ -43,31 +45,36 @@ public class PostsController : ControllerBase
 
 
     [HttpPost("addposts")]
-
     public async Task<ActionResult<Posts>> CreatePost([FromBody] Posts post)
     {
+        // ✅ 1. Validate Client
         var client = await _context.Clients.FindAsync(post.ClientId);
         if (client == null)
             return BadRequest(new { message = "Invalid ClientId" });
 
+        // ✅ 2. Set save date
         post.Savedate = DateTime.UtcNow;
+
+        // ✅ 3. Add Post
         _context.Posts.Add(post);
         await _context.SaveChangesAsync();
 
-        //  Activate the assigned driver
-        // if (post.DriverID.HasValue)
-        // {
-        //     var driver = await _context.Drivers.FindAsync(post.DriverID.Value);
-        //     if (driver != null && !driver.IsActive)
-        //     {
-        //         driver.IsActive = true;
-        //         _context.Drivers.Update(driver);
-        //         await _context.SaveChangesAsync();
-        //     }
-        // }
+        // ✅ 4. Activate the assigned driver if exists
+        if (post.DriverID.HasValue)
+        {
+            var driver = await _context.Drivers.FindAsync(post.DriverID.Value);
+            if (driver != null && !driver.IsActive)
+            {
+                driver.IsActive = true;
+                _context.Drivers.Update(driver);
+                await _context.SaveChangesAsync();
+            }
+        }
 
+        // ✅ 5. Return created post
         return CreatedAtAction(nameof(GetPostById), new { id = post.Id }, post);
     }
+
 
 
 
