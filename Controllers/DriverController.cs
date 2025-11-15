@@ -38,7 +38,7 @@ public class DriversController : ControllerBase
     }
 
     // ✅ GET driver by id
-    [HttpGet("{id}")]
+    [HttpGet("getdriver/{id}")]
     public async Task<ActionResult<Drivers>> GetDriver(int id)
     {
         var driver = await _context.Drivers
