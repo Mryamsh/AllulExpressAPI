@@ -47,19 +47,19 @@ public class PostsController : ControllerBase
     [HttpPost("addposts")]
     public async Task<ActionResult<Posts>> CreatePost([FromBody] Posts post)
     {
-        // ✅ 1. Validate Client
+        //  1. Validate Client
         var client = await _context.Clients.FindAsync(post.ClientId);
         if (client == null)
             return BadRequest(new { message = "Invalid ClientId" });
 
-        // ✅ 2. Set save date
+        //  2. Set save date
         post.Savedate = DateTime.UtcNow;
 
-        // ✅ 3. Add Post
+        //  3. Add Post
         _context.Posts.Add(post);
         await _context.SaveChangesAsync();
 
-        // ✅ 4. Activate the assigned driver if exists
+        //  4. Activate the assigned driver if exists
         if (post.DriverID.HasValue)
         {
             var driver = await _context.Drivers.FindAsync(post.DriverID.Value);
@@ -71,14 +71,14 @@ public class PostsController : ControllerBase
             }
         }
 
-        // ✅ 5. Return created post
+        //  5. Return created post
         return CreatedAtAction(nameof(GetPostById), new { id = post.Id }, post);
     }
 
 
 
 
-    // ✅ Update post
+    //  Update post
     [HttpPut("{id}")]
     public async Task<IActionResult> UpdatePost(int id, [FromBody] Posts updatedPost)
     {

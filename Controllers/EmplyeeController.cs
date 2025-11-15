@@ -105,14 +105,14 @@ public class EmployeesController : ControllerBase
                 e.Name,
                 e.Email,
                 e.Role,
-                e.IDimagefront,
-                e.IDimageback,
+                // e.IDimagefront,
+                // e.IDimageback,
                 e.Phonenum1,
                 e.Phonenum2,
-                e.Savedate,
+                // e.Savedate,
                 e.Language,
-                e.Note,
-                e.Enabled
+                // e.Note,
+                // e.Enabled
             })
             .ToListAsync();
 
