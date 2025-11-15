@@ -88,7 +88,8 @@ public class EmployeesController : ControllerBase
             employee.Phonenum2,
             employee.Language,
             employee.Note,
-            employee.Enabled
+            employee.Enabled,
+            employee.Savedate
         };
 
         return Ok(employeeDto);
