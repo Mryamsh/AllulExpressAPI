@@ -32,7 +32,7 @@ public class ClientController : ControllerBase
                 c.Phonenum1,
                 c.Phonenum2,
                 c.Totalpaymentpayed,
-                c.Posts
+                c.Totalposts
                 // add only the columns you want
                 //  PostCount = c.Posts.Count // example: number of posts
             })
