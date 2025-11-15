@@ -122,7 +122,7 @@ public class EmployeesController : ControllerBase
 
 
 
-    [HttpPut("{id}")]
+    [HttpPut("updateEmployee/{id}")]
     public async Task<IActionResult> UpdateEmployee(int id, [FromBody] Employees updatedEmployee)
     {
         if (id != updatedEmployee.Id)
@@ -155,7 +155,7 @@ public class EmployeesController : ControllerBase
             return BadRequest(new { message = "Update failed", error = ex.Message });
         }
     }
-    [HttpPut("{id}/enable")]
+    [HttpPut("emplyee/{id}/enable")]
     public async Task<IActionResult> ToggleClientStatus(int id, [FromBody] bool enabled)
     {
         var emplyee = await _context.Employees.FindAsync(id);
