@@ -20,6 +20,19 @@ public class DriversController : ControllerBase
     {
         var drivers = await _context.Drivers
             .Include(d => d.Cities)
+             .Select(d => new
+             {
+                 d.Id,
+                 d.Name,
+                 d.Email,
+                 d.Phonenum1,
+                 d.Phonenum2,
+                 d.Arrivedpost,
+                 d.Remainedpost,
+                 d.IsActive,
+                 d.Cities
+
+             })
             .ToListAsync();
         return Ok(drivers);
     }
