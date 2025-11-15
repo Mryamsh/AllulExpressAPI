@@ -65,7 +65,7 @@ public class EmployeesController : ControllerBase
 
     }
 
-    [HttpGet("{id}")]
+    [HttpGet("getEmployee/{id}")]
     public async Task<ActionResult> GetEmployee(int id)
     {
         var employee = await _context.Employees
