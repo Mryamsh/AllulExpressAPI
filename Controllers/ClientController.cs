@@ -18,17 +18,32 @@ public class ClientController : ControllerBase
 
     // GET: api/client
     [HttpGet("allclients")]
-    public async Task<ActionResult<IEnumerable<Clients>>> GetClients()
+    public async Task<ActionResult<IEnumerable<object>>> GetClients()
     {
-        // Include posts
         var clients = await _context.Clients
-            .Include(c => c.Posts)
+            .Include(c => c.Posts) // optional, only if you need some info from posts
+            .Select(c => new
+            {
+                c.Id,
+                c.Name,
+                c.Email,
+                c.Business,
+
+                c.Phonenum1,
+                c.Phonenum2,
+                c.Totalpaymentpayed,
+                c.Posts
+                // add only the columns you want
+                //  PostCount = c.Posts.Count // example: number of posts
+            })
             .ToListAsync();
+
         return Ok(clients);
     }
 
+
     // GET: api/client/5
-    [HttpGet("get/{id}")]
+    [HttpGet("getclient/{id}")]
     public async Task<ActionResult<Clients>> GetClient(int id)
     {
         var client = await _context.Clients
