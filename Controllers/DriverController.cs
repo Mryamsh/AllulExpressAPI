@@ -92,7 +92,7 @@ public class DriversController : ControllerBase
 
     //  PUT: update driver
 
-    [HttpPut("{id}")]
+    [HttpPut("updateDriver/{id}")]
     public async Task<IActionResult> UpdateDriver(int id, [FromBody] Drivers updated)
     {
         if (id != updated.Id)
