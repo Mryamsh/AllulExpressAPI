@@ -122,7 +122,7 @@ public class DriversController : ControllerBase
         driver.Note = updated.Note;
         driver.Enabled = updated.Enabled;
         driver.Language = updated.Language;
-        driver.Password = BCrypt.Net.BCrypt.HashPassword(updated.Password);
+
 
         // ✅ Update related cities safely
         if (updated.Cities != null && updated.Cities.Count > 0)
@@ -143,6 +143,9 @@ public class DriversController : ControllerBase
 
         return Ok(new { message = "Driver updated successfully", driver });
     }
+
+
+
     [HttpGet("drivers-by-city/{cityName}")]
     public async Task<IActionResult> GetDriversByCity(string cityName)
     {
