@@ -21,8 +21,19 @@ public class PostsController : ControllerBase
     public async Task<ActionResult<IEnumerable<Posts>>> GetAllPosts()
     {
         var posts = await _context.Posts
-            .Include(p => p.Client)
-            .Include(p => p.driver)
+            // .Include(p => p.Client)
+            // .Include(p => p.driver)
+            .Select(p => new
+            {
+                p.Id,
+                p.Businessname,
+                p.Poststatus,
+                p.Phonenum1,
+                p.Phonenum2,
+                p.Exactaddress
+
+
+            })
 
             .ToListAsync();
 
@@ -30,11 +41,12 @@ public class PostsController : ControllerBase
     }
 
     // ✅ Get post by ID
-    [HttpGet("{id}")]
+    [HttpGet("getpost/{id}")]
     public async Task<ActionResult<Posts>> GetPostById(int id)
     {
         var post = await _context.Posts
             .Include(p => p.Client)
+            .Include(p => p.driver)
             .FirstOrDefaultAsync(p => p.Id == id);
 
         if (post == null)
