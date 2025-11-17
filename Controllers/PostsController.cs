@@ -91,7 +91,7 @@ public class PostsController : ControllerBase
 
 
     //  Update post
-    [HttpPut("{id}")]
+    [HttpPut("updatepost/{id}")]
     public async Task<IActionResult> UpdatePost(int id, [FromBody] Posts updatedPost)
     {
         if (id != updatedPost.Id)
