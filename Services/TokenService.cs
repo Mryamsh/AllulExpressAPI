@@ -42,6 +42,32 @@ public class TokenService
         var token = tokenHandler.CreateToken(tokenDescriptor);
         return tokenHandler.WriteToken(token);
     }
+    public string GenerateToken(Clients client)
+    {
+        var tokenHandler = new JwtSecurityTokenHandler();
+#pragma warning disable CS8604 // Possible null reference argument.
+        var key = Encoding.ASCII.GetBytes(_config["Jwt:Key"]);
+#pragma warning restore CS8604 // Possible null reference argument.
+
+#pragma warning disable CS8602 // Dereference of a possibly null reference.
+#pragma warning disable CS8604 // Possible null reference argument.
+        var tokenDescriptor = new SecurityTokenDescriptor
+        {
+            Subject = new ClaimsIdentity(new[]
+            {
+                new Claim(ClaimTypes.NameIdentifier, client.Id.ToString()),
+                new Claim(ClaimTypes.Email,client.Email),
+               // new Claim(ClaimTypes.Role, emplyee.Role.ToString())
+            }),
+            Expires = DateTime.UtcNow.AddDays(7),
+            SigningCredentials = new SigningCredentials(new SymmetricSecurityKey(key), SecurityAlgorithms.HmacSha256Signature)
+        };
+#pragma warning restore CS8604 // Possible null reference argument.
+#pragma warning restore CS8602 // Dereference of a possibly null reference.
+
+        var token = tokenHandler.CreateToken(tokenDescriptor);
+        return tokenHandler.WriteToken(token);
+    }
 
     public async Task<bool> IsTokenValidAsync(string token)
     {
