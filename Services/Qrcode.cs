@@ -30,7 +30,11 @@ namespace AllulExpressApi.Services
         // Combine BusinessName + Date + PostId, encrypt it → generate QR
         public string CreatePostQr(string businessName, DateTime date, int postId)
         {
+            Console.WriteLine($"BusinessName: {businessName}");
+            Console.WriteLine($"Date: {date:yyyy-MM-dd}");
+            Console.WriteLine($"PostId: {postId}");
             string rawData = $"{businessName}|{date:yyyy-MM-dd}|{postId}";
+            Console.WriteLine($"Raw Data: {rawData}");
             string encrypted = Encrypt(rawData);
 
             byte[] qrBytes;
