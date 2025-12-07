@@ -1,5 +1,6 @@
 using AllulExpressApi.Data;
 using AllulExpressApi.Models;
+using AllulExpressApi.Services;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
@@ -10,10 +11,12 @@ using Microsoft.EntityFrameworkCore;
 public class PostsController : ControllerBase
 {
     private readonly AppDbContext _context;
+    private readonly QrCodeService _qr;
 
-    public PostsController(AppDbContext context)
+    public PostsController(AppDbContext context, QrCodeService qr)
     {
         _context = context;
+        _qr = qr;
     }
 
     // ✅ Get all posts (with client info)
@@ -82,7 +85,10 @@ public class PostsController : ControllerBase
                 await _context.SaveChangesAsync();
             }
         }
+        string qr = _qr.CreatePostQr(post.Businessname, post.Savedate, post.Id);
+        post.Qrcode = qr;
 
+        await _context.SaveChangesAsync();
         //  5. Return created post
         return CreatedAtAction(nameof(GetPostById), new { id = post.Id }, post);
     }

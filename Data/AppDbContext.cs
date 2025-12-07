@@ -18,10 +18,14 @@ namespace AllulExpressApi.Data
         public DbSet<Cities> Cities { get; set; }
         public DbSet<Posts> Posts { get; set; }
         public DbSet<ValidToken> ValidTokens { get; set; }
+        public DbSet<ValidTokenClients> ValidTokenClients { get; set; }
+
 
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
+            modelBuilder.Entity<ValidTokenClients>()
+             .ToTable("ValidTokenClients");
             base.OnModelCreating(modelBuilder);
             modelBuilder.Entity<Clients>()
                   .HasIndex(c => c.Phonenum1)

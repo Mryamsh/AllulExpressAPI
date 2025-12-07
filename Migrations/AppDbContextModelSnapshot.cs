@@ -259,7 +259,7 @@ namespace AllulExpressAPI.Migrations
                     b.Property<int>("ClientId")
                         .HasColumnType("int");
 
-                    b.Property<int?>("DriverId")
+                    b.Property<int?>("DriverID")
                         .HasColumnType("int");
 
                     b.Property<string>("Exactaddress")
@@ -298,7 +298,7 @@ namespace AllulExpressAPI.Migrations
 
                     b.HasIndex("ClientId");
 
-                    b.HasIndex("DriverId");
+                    b.HasIndex("DriverID");
 
                     b.ToTable("Posts");
                 });
@@ -329,6 +329,32 @@ namespace AllulExpressAPI.Migrations
                     b.ToTable("ValidTokens");
                 });
 
+            modelBuilder.Entity("AllulExpressApi.Models.ValidTokenClients", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    MySqlPropertyBuilderExtensions.UseMySqlIdentityColumn(b.Property<int>("Id"));
+
+                    b.Property<int>("ClientId")
+                        .HasColumnType("int");
+
+                    b.Property<DateTime>("CreatedAt")
+                        .HasColumnType("datetime(6)");
+
+                    b.Property<DateTime>("ExpiresAt")
+                        .HasColumnType("datetime(6)");
+
+                    b.Property<string>("Token")
+                        .IsRequired()
+                        .HasColumnType("longtext");
+
+                    b.HasKey("Id");
+
+                    b.ToTable("ValidTokenClients", (string)null);
+                });
+
             modelBuilder.Entity("CitiesDrivers", b =>
                 {
                     b.Property<int>("CitiesId")
@@ -352,13 +378,13 @@ namespace AllulExpressAPI.Migrations
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
-                    b.HasOne("AllulExpressApi.Models.Drivers", "Driver")
-                        .WithMany("Posts")
-                        .HasForeignKey("DriverId");
+                    b.HasOne("AllulExpressApi.Models.Drivers", "driver")
+                        .WithMany()
+                        .HasForeignKey("DriverID");
 
                     b.Navigation("Client");
 
-                    b.Navigation("Driver");
+                    b.Navigation("driver");
                 });
 
             modelBuilder.Entity("CitiesDrivers", b =>
@@ -377,11 +403,6 @@ namespace AllulExpressAPI.Migrations
                 });
 
             modelBuilder.Entity("AllulExpressApi.Models.Clients", b =>
-                {
-                    b.Navigation("Posts");
-                });
-
-            modelBuilder.Entity("AllulExpressApi.Models.Drivers", b =>
                 {
                     b.Navigation("Posts");
                 });

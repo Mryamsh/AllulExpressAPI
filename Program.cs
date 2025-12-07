@@ -2,6 +2,7 @@ using Microsoft.EntityFrameworkCore;
 using AllulExpressApi.Data;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.IdentityModel.Tokens;
+using AllulExpressApi.Services;
 
 var builder = WebApplication.CreateBuilder(args);
 var jwtSettings = builder.Configuration.GetSection("Jwt");
@@ -40,10 +41,13 @@ builder.Services.AddCors(options =>
                    .AllowAnyHeader();
         });
 });
+builder.Services.AddDataProtection();
+builder.Services.AddScoped<QrCodeService>();
 
 builder.Services.AddScoped<TokenService>();
 builder.Services.AddControllers();
 builder.Services.AddEndpointsApiExplorer();
+
 builder.Services.AddSwaggerGen();
 builder.Services.AddControllers()
     .AddJsonOptions(options =>
