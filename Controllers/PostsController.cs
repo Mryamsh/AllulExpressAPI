@@ -85,8 +85,9 @@ public class PostsController : ControllerBase
                 await _context.SaveChangesAsync();
             }
         }
-        string qr = _qr.CreatePostQr(post.Businessname, post.Savedate, post.Id);
-        post.Qrcode = qr;
+        QrResult qr = _qr.CreatePostQr(post.Businessname, post.Savedate, post.Id);
+        post.Qrcodetext = qr.Qrcodetext;
+        post.Qrcode = qr.Qrcode;
 
         await _context.SaveChangesAsync();
         //  5. Return created post

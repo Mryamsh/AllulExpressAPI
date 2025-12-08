@@ -28,13 +28,13 @@ namespace AllulExpressApi.Services
 
 
         // Combine BusinessName + Date + PostId, encrypt it → generate QR
-        public string CreatePostQr(string businessName, DateTime date, int postId)
+        public QrResult CreatePostQr(string businessName, DateTime date, int postId)
         {
-            Console.WriteLine($"BusinessName: {businessName}");
-            Console.WriteLine($"Date: {date:yyyy-MM-dd}");
-            Console.WriteLine($"PostId: {postId}");
+            // Console.WriteLine($"BusinessName: {businessName}");
+            //Console.WriteLine($"Date: {date:yyyy-MM-dd}");
+            // Console.WriteLine($"PostId: {postId}");
             string rawData = $"{businessName}|{date:yyyy-MM-dd}|{postId}";
-            Console.WriteLine($"Raw Data: {rawData}");
+            // Console.WriteLine($"Raw Data: {rawData}");
             string encrypted = Encrypt(rawData);
 
             byte[] qrBytes;
@@ -45,7 +45,14 @@ namespace AllulExpressApi.Services
                 qrBytes = qrCode.GetGraphic(20);
             }
 
-            return SaveQrImage(qrBytes, postId);
+
+            string imagePath = SaveQrImage(qrBytes, postId);
+
+            return new QrResult
+            {
+                Qrcodetext = encrypted,
+                Qrcode = imagePath
+            };
         }
 
 
