@@ -56,50 +56,11 @@ public class LoginController : ControllerBase
         await _db.SaveChangesAsync();
 
         // 4️⃣ return token & role
-        return Ok(new { Token = token, Role = user.Role, user.Email, user.Language });
+        return Ok(new { Token = token, Role = user.Role, user.Email, user.Language, user.Id });
     }
 
-    [AllowAnonymous]
-    [HttpPost("loginclient")]
-    public async Task<IActionResult> LoginClient([FromBody] LoginRequest request)
-    {
 
 
-        // 1 fetch user from DB
-        var client = await _db.Clients
-     .FirstOrDefaultAsync(u => u.Phonenum1 == request.Phonenum1);
-
-        if (client == null)
-        {
-            // user not found
-            return Unauthorized(new { message = "Invalid phone or password" });
-        }
-
-        //  Verify the password (hashed)
-        bool isValidPassword = BCrypt.Net.BCrypt.Verify(request.Password, client.Password);
-
-        if (!isValidPassword)
-        {
-            // password incorrect
-            return Unauthorized(new { message = "Invalid phone or password" });
-        }
-
-
-        //  generate JWT
-        var token = _tokenService.GenerateToken(client);
-
-        // 3️⃣ save in ValidTokens
-        _db.ValidTokens.Add(new ValidToken
-        {
-            UserId = client.Id,
-            Token = token,
-            ExpiresAt = DateTime.UtcNow.AddDays(7)
-        });
-        await _db.SaveChangesAsync();
-
-        // 4️⃣ return token
-        return Ok(new { Token = token, client, client.Language });
-    }
 
     [HttpGet("validate-token")]
     public async Task<IActionResult> ValidateToken([FromQuery] string token)
