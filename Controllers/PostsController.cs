@@ -191,26 +191,20 @@ public class PostsController : ControllerBase
         switch (filterName.ToLower())
         {
             case "all":
-                // no filter needed
                 break;
-
-            case "todays posts":
+            case "todays_posts":
                 query = query.Where(p => p.Savedate.Date == DateTime.UtcNow.Date);
                 break;
-
-            case "returned posts":
+            case "returned_posts":
                 query = query.Where(p => p.Poststatus.ToLower() == "returned");
                 break;
-
-            case "recieved posts":
+            case "recieved_posts":
                 query = query.Where(p => p.Poststatus.ToLower() == "received");
                 break;
-
-            case "todays recieved posts":
+            case "todays_recieved_posts":
                 query = query.Where(p => p.Poststatus.ToLower() == "received"
                                          && p.Savedate.Date == DateTime.UtcNow.Date);
                 break;
-
             default:
                 return BadRequest(new { message = "Invalid filter" });
         }
