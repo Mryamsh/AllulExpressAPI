@@ -128,18 +128,18 @@ public class PostsController : ControllerBase
     }
 
     // ✅ Delete post
-    [HttpDelete("{id}")]
-    public async Task<IActionResult> DeletePost(int id)
-    {
-        var post = await _context.Posts.FindAsync(id);
-        if (post == null)
-            return NotFound(new { message = "Post not found" });
+    // [HttpDelete("{id}")]
+    // public async Task<IActionResult> DeletePost(int id)
+    // {
+    //     var post = await _context.Posts.FindAsync(id);
+    //     if (post == null)
+    //         return NotFound(new { message = "Post not found" });
 
-        _context.Posts.Remove(post);
-        await _context.SaveChangesAsync();
+    //     _context.Posts.Remove(post);
+    //     await _context.SaveChangesAsync();
 
-        return Ok(new { message = "Post deleted successfully" });
-    }
+    //     return Ok(new { message = "Post deleted successfully" });
+    // }
 
     // ✅ Get posts by client ID
     [HttpGet("client/{clientId}")]
@@ -182,6 +182,52 @@ public class PostsController : ControllerBase
         };
 
         return Ok(result);
+    }
+    [HttpGet("posts/filter/{filterName}")]
+    public async Task<IActionResult> GetPostsByFilter(string filterName)
+    {
+        IQueryable<Posts> query = _context.Posts;
+
+        switch (filterName.ToLower())
+        {
+            case "all":
+                // no filter needed
+                break;
+
+            case "todays posts":
+                query = query.Where(p => p.Savedate.Date == DateTime.UtcNow.Date);
+                break;
+
+            case "returned posts":
+                query = query.Where(p => p.Poststatus.ToLower() == "returned");
+                break;
+
+            case "recieved posts":
+                query = query.Where(p => p.Poststatus.ToLower() == "received");
+                break;
+
+            case "todays recieved posts":
+                query = query.Where(p => p.Poststatus.ToLower() == "received"
+                                         && p.Savedate.Date == DateTime.UtcNow.Date);
+                break;
+
+            default:
+                return BadRequest(new { message = "Invalid filter" });
+        }
+
+        var posts = await query
+            .Select(p => new
+            {
+                p.Id,
+                p.Businessname,
+                p.Poststatus,
+                p.Phonenum1,
+                p.Phonenum2,
+                p.Exactaddress
+            })
+            .ToListAsync();
+
+        return Ok(posts);
     }
 
 }
