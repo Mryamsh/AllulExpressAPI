@@ -192,16 +192,16 @@ public class PostsController : ControllerBase
         {
             case "all":
                 break;
-            case "todaysPosts":
+            case "todaysposts":
                 query = query.Where(p => p.Savedate.Date == DateTime.UtcNow.Date);
                 break;
-            case "returnedPosts":
+            case "returnedposts":
                 query = query.Where(p => p.Poststatus.ToLower() == "returned");
                 break;
-            case "recievedPosts":
+            case "recievedposts":
                 query = query.Where(p => p.Poststatus.ToLower() == "received");
                 break;
-            case "todaysRecievedPosts":
+            case "todaysrecievedposts":
                 query = query.Where(p => p.Poststatus.ToLower() == "received"
                                          && p.Savedate.Date == DateTime.UtcNow.Date);
                 break;
