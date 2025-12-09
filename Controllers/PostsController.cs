@@ -155,4 +155,33 @@ public class PostsController : ControllerBase
 
         return Ok(posts);
     }
+    [HttpGet("posts/counts")]
+    public async Task<IActionResult> GetPostCounts()
+    {
+        var allCount = await _context.Posts.CountAsync();
+        var todaysPostsCount = await _context.Posts
+            .Where(p => p.Savedate.Date == DateTime.UtcNow.Date)
+            .CountAsync();
+        var returnedPostsCount = await _context.Posts
+            .Where(p => p.Poststatus == "Returned")
+            .CountAsync();
+        var receivedPostsCount = await _context.Posts
+            .Where(p => p.Poststatus == "Received")
+            .CountAsync();
+        var todaysReceivedPostsCount = await _context.Posts
+            .Where(p => p.Poststatus == "Received" && p.Savedate.Date == DateTime.UtcNow.Date)
+            .CountAsync();
+
+        var result = new
+        {
+            All = allCount,
+            TodaysPosts = todaysPostsCount,
+            ReturnedPosts = returnedPostsCount,
+            RecievedPosts = receivedPostsCount,
+            TodaysRecievedPosts = todaysReceivedPostsCount
+        };
+
+        return Ok(result);
+    }
+
 }
