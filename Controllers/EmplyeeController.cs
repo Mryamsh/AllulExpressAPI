@@ -155,18 +155,21 @@ public class EmployeesController : ControllerBase
             return BadRequest(new { message = "Update failed", error = ex.Message });
         }
     }
-    [HttpPut("emplyee/{id}/enable")]
-    public async Task<IActionResult> ToggleClientStatus(int id, [FromBody] bool enabled)
+    [HttpPost("toggle-status/{id}")]
+    public async Task<IActionResult> ToggleClientStatus(
+        int id,
+        [FromBody] bool enabled
+    )
     {
-        var emplyee = await _context.Employees.FindAsync(id);
-        if (emplyee == null)
+        var employee = await _context.Employees.FindAsync(id);
+        if (employee == null)
             return NotFound(new { message = "Employee not found" });
 
-        emplyee.Enabled = enabled;
+        employee.Enabled = enabled;
         await _context.SaveChangesAsync();
 
         string status = enabled ? "enabled" : "disabled";
-        return Ok(new { message = $"Employee {status} successfully", emplyee.Id, emplyee.Enabled });
+        return Ok(new { message = $"Employee {status} successfully", employee.Id, employee.Enabled });
     }
 
 
