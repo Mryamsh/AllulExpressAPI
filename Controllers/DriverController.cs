@@ -165,18 +165,20 @@ public class DriversController : ControllerBase
     }
 
 
-    [HttpPost("toggle-status/{id}/toggle")]
-    public async Task<IActionResult> ToggleDriver(int id)
+    [HttpPost("toggle-status/{id}")]
+    public async Task<IActionResult> ToggleDriver(
+      int id,
+      [FromBody] bool enabled
+  )
     {
         var driver = await _context.Drivers.FindAsync(id);
         if (driver == null)
-            return NotFound(new { message = "Driver not found" });
+            return NotFound();
 
-        driver.Enabled = !driver.Enabled;
+        driver.Enabled = enabled;
         await _context.SaveChangesAsync();
 
-        string status = driver.Enabled ? "enabled" : "disabled";
-        return Ok(new { message = $"Driver {status}", driver.Id, driver.Enabled });
+        return Ok(new { driver.Id, driver.Enabled });
     }
 
 

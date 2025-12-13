@@ -116,17 +116,23 @@ public class ClientController : ControllerBase
     }
 
     // PUT: api/client/5/enable
-    [HttpPost("toggle-status/{id}")]
-    public async Task<IActionResult> ToggleClientStatus(int id, [FromBody] bool enabled)
+    [HttpPost("toggle-status/{id}/toggle")]
+    public async Task<IActionResult> ToggleClient(int id)
     {
         var client = await _context.Clients.FindAsync(id);
         if (client == null)
             return NotFound(new { message = "Client not found" });
 
-        client.Enabled = enabled;
+        client.Enabled = !client.Enabled;
         await _context.SaveChangesAsync();
 
-        string status = enabled ? "enabled" : "disabled";
-        return Ok(new { message = $"Client {status} successfully", client.Id, client.Enabled });
+        string status = client.Enabled ? "enabled" : "disabled";
+        return Ok(new
+        {
+            message = $"Client {status}",
+            client.Id,
+            client.Enabled
+        });
     }
+
 }
