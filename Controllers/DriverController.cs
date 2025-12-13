@@ -165,7 +165,7 @@ public class DriversController : ControllerBase
     }
 
 
-    [HttpPut("{id}/toggle")]
+    [HttpPut("toggle-status/{id}/toggle")]
     public async Task<IActionResult> ToggleDriver(int id)
     {
         var driver = await _context.Drivers.FindAsync(id);
