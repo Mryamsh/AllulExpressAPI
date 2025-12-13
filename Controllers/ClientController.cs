@@ -116,7 +116,7 @@ public class ClientController : ControllerBase
     }
 
     // PUT: api/client/5/enable
-    [HttpPut("toggle-status/{id}")]
+    [HttpPost("toggle-status/{id}")]
     public async Task<IActionResult> ToggleClientStatus(int id, [FromBody] bool enabled)
     {
         var client = await _context.Clients.FindAsync(id);
