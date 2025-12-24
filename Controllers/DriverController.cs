@@ -180,7 +180,24 @@ public class DriversController : ControllerBase
 
         return Ok(new { driver.Id, driver.Enabled });
     }
+    [HttpGet("location/{id}")]
+    public async Task<IActionResult> GetDriverById(int id)
+    {
+        var driver = await _context.Drivers
+            .Where(d => d.Id == id)
+            .Select(d => new
+            {
+                d.Id,
+                d.Name,
+                d.Latitude,
+                d.Longitude
+            })
+            .FirstOrDefaultAsync();
 
+        if (driver == null) return NotFound();
+
+        return Ok(driver);
+    }
 
     // [HttpDelete("{id}")]
     // public async Task<IActionResult> DeleteDriver(int id)

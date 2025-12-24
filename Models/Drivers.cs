@@ -28,6 +28,10 @@ namespace AllulExpressApi.Models
         public bool Enabled { get; set; }
 
         public string? Language { get; set; }
+        public float? Latitude { get; set; }
+        public float? Longitude { get; set; }
+
+        public DateTime? LastUpdated { get; set; }
 
 
 
