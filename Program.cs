@@ -42,6 +42,10 @@ builder.Services.AddCors(options =>
         });
 });
 builder.Services.AddDataProtection();
+builder.Services.Configure<TwilioSettings>(builder.Configuration.GetSection("Twilio"));
+
+// WhatsApp service
+builder.Services.AddSingleton<WhatsAppService>();
 builder.Services.AddScoped<QrCodeService>();
 
 builder.Services.AddScoped<TokenService>();
