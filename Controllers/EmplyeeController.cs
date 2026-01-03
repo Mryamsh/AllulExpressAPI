@@ -70,51 +70,45 @@ public class EmployeesController : ControllerBase
     public async Task<ActionResult> GetEmployee(int id)
     {
         var employee = await _context.Employees
-            .AsNoTracking() // Optional: improves performance for read-only
+            .Include(e => e.RoleNavigation) // include role
+            .AsNoTracking()
             .FirstOrDefaultAsync(e => e.Id == id);
 
         if (employee == null)
             return NotFound(new { message = "Employee not found" });
 
-        // Return DTO without password
-        var employeeDto = new
+        return Ok(new
         {
             employee.Id,
             employee.Name,
             employee.Email,
-            employee.Role,
-            employee.IDimagefront,
-            employee.IDimageback,
+            RoleId = employee.RoleId,
+            RoleName = employee.RoleNavigation?.Name, // get role name dynamically
             employee.Phonenum1,
             employee.Phonenum2,
             employee.Language,
             employee.Note,
-            employee.Enabled,
-            employee.Savedate
-        };
-
-        return Ok(employeeDto);
+            employee.Enabled
+        });
     }
+
 
     [HttpGet("getemployees")]
     public async Task<ActionResult> GetAllEmployees()
     {
         var employees = await _context.Employees
+            .Include(e => e.RoleNavigation) // include role from Roles table
             .AsNoTracking()
             .Select(e => new
             {
                 e.Id,
                 e.Name,
                 e.Email,
-                e.Role,
-                // e.IDimagefront,
-                // e.IDimageback,
+                RoleId = e.RoleId,
+                RoleName = e.RoleNavigation != null ? e.RoleNavigation.Name : null, // get role name dynamically
                 e.Phonenum1,
                 e.Phonenum2,
-                // e.Savedate,
-                e.Language,
-                // e.Note,
-                // e.Enabled
+                e.Language
             })
             .ToListAsync();
 
