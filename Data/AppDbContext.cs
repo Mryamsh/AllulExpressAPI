@@ -13,6 +13,8 @@ namespace AllulExpressApi.Data
 
         // Represent the "Employees" table
         public DbSet<Employees> Employees { get; set; }
+        public DbSet<Role> Roles { get; set; }
+
         public DbSet<Drivers> Drivers { get; set; }
         public DbSet<Clients> Clients { get; set; }
         public DbSet<Cities> Cities { get; set; }

@@ -31,7 +31,7 @@ public class EmployeesController : ControllerBase
             return Conflict(new { message = "Phone number already in use" });
 
         string hashedPassword = BCrypt.Net.BCrypt.HashPassword(employee.Password);
-
+        var role = await _context.Roles.FindAsync(employee.RoleId);
         var emplyee = new Employees
         {
 
@@ -41,7 +41,8 @@ public class EmployeesController : ControllerBase
             Email = employee.Email,
             Password = hashedPassword,
 
-            Role = employee.Role,
+            RoleId = role.Id,
+            Role = role.Name,
             IDimagefront = employee.IDimagefront,
             IDimageback = employee.IDimageback,
             Savedate = employee.Savedate,

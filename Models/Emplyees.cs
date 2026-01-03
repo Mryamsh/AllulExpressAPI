@@ -1,4 +1,5 @@
 using System.ComponentModel.DataAnnotations;
+using System.ComponentModel.DataAnnotations.Schema;
 
 namespace AllulExpressApi.Models
 {
@@ -23,6 +24,11 @@ namespace AllulExpressApi.Models
 
         public string? OtpCode { get; set; }
         public DateTime? OtpExpiry { get; set; }
+        [Required]
+        public int RoleId { get; set; }
+
+        [ForeignKey("RoleId")]
+        public Role? RoleNavigation { get; set; }
 
     }
 }
