@@ -1,5 +1,6 @@
+using System.ComponentModel.DataAnnotations.Schema;
 using AllulExpressApi.Models;
-
+[Table("roles")]
 public class Role
 {
     public int Id { get; set; }
