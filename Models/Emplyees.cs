@@ -25,6 +25,7 @@ namespace AllulExpressApi.Models
         public string? OtpCode { get; set; }
         public DateTime? OtpExpiry { get; set; }
         [Required]
+        [Column("role_id")]
         public int RoleId { get; set; }
 
         [ForeignKey("RoleId")]
