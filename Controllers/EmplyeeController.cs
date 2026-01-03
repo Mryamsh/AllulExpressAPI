@@ -135,7 +135,7 @@ public class EmployeesController : ControllerBase
 
         employee.Name = updatedEmployee.Name;
         employee.Email = updatedEmployee.Email;
-        employee.Role = updatedEmployee.Role;
+        // employee.Role = updatedEmployee.Role;
         employee.Phonenum1 = updatedEmployee.Phonenum1;
         employee.Phonenum2 = updatedEmployee.Phonenum2;
         employee.Language = updatedEmployee.Language;
@@ -144,6 +144,15 @@ public class EmployeesController : ControllerBase
         employee.IDimagefront = updatedEmployee.IDimagefront;
         employee.IDimageback = updatedEmployee.IDimageback;
         employee.Savedate = updatedEmployee.Savedate;
+        if (updatedEmployee.RoleId != employee.RoleId)
+        {
+            var role = await _context.Roles.FindAsync(updatedEmployee.RoleId);
+            if (role == null)
+                return BadRequest(new { message = "Invalid RoleId" });
+
+            employee.RoleId = role.Id;      // store foreign key
+            employee.Role = role.Name;      // optional: store name in string for legacy reasons
+        }
 
         try
         {
