@@ -86,6 +86,9 @@ public class EmployeesController : ControllerBase
             RoleName = employee.RoleNavigation?.Name, // get role name dynamically
             employee.Phonenum1,
             employee.Phonenum2,
+            employee.IDimageback,
+            employee.IDimagefront,
+            employee.Savedate,
             employee.Language,
             employee.Note,
             employee.Enabled
