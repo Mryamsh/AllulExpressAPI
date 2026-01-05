@@ -27,4 +27,32 @@ public class RolesController : ControllerBase
 
         return Ok(roles);
     }
+
+    [HttpGet("{id}")]
+    public async Task<IActionResult> GetRoleWithPermissions(int id)
+    {
+        var role = await _context.Roles
+            .Where(r => r.Id == id)
+            .Select(r => new
+            {
+                r.Id,
+                r.Name,
+                Permissions = r.RolePermissions
+                               .Select(rp => new
+                               {
+                                   rp.Permission.Id,
+                                   rp.Permission.Code,
+                                   rp.Permission.Name,
+                                   rp.Permission.Description,
+                                   rp.Permission.Module
+                               })
+                               .ToList()
+            })
+            .FirstOrDefaultAsync();
+
+        if (role == null) return NotFound();
+
+        return Ok(role);
+    }
+
 }

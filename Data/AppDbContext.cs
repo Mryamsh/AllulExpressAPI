@@ -49,6 +49,20 @@ namespace AllulExpressApi.Data
             .WithMany(c => c.Posts)
             .HasForeignKey(p => p.ClientId);
 
+
+            modelBuilder.Entity<RolePermission>()
+        .HasKey(rp => new { rp.RoleId, rp.PermissionId });
+
+            modelBuilder.Entity<RolePermission>()
+                .HasOne(rp => rp.Role)
+                .WithMany(r => r.RolePermissions)
+                .HasForeignKey(rp => rp.RoleId);
+
+            modelBuilder.Entity<RolePermission>()
+                .HasOne(rp => rp.Permission)
+                .WithMany(p => p.RolePermissions)
+                .HasForeignKey(rp => rp.PermissionId);
+
         }
 
     }
