@@ -33,6 +33,14 @@ public class LoginController : ControllerBase
             return Unauthorized(new { message = "Invalid phone or password" });
         }
 
+        if (!user.Enabled) // or user.IsActive == false
+        {
+            return StatusCode(403, new
+            {
+                message = "Your account has been disabled. Please contact support."
+            });
+        }
+
         //  Verify the password (hashed)
         bool isValidPassword = BCrypt.Net.BCrypt.Verify(request.Password, user.Password);
 
