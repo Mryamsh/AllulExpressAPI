@@ -56,7 +56,7 @@ public class LoginController : ControllerBase
         await _db.SaveChangesAsync();
 
         // 4️⃣ return token & role
-        return Ok(new { Token = token, Role = user.Role, user.Email, user.Language, user.Id });
+        return Ok(new { Token = token, Role = user.Role, roleID = user.RoleId, user.Email, user.Language, user.Id });
     }
 
 
