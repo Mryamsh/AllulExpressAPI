@@ -40,11 +40,11 @@ public class RolesController : ControllerBase
                 Permissions = r.RolePermissions
                                .Select(rp => new
                                {
-                                   rp.Permission.Id,
+                                   //  rp.Permission.Id,
                                    rp.Permission.Code,
-                                   rp.Permission.Name,
-                                   rp.Permission.Description,
-                                   rp.Permission.Module
+                                   // rp.Permission.Name,
+                                   //rp.Permission.Description,
+                                   //rp.Permission.Module
                                })
                                .ToList()
             })
