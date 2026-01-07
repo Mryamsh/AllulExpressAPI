@@ -43,6 +43,19 @@ builder.Services.AddCors(options =>
 });
 builder.Services.AddDataProtection();
 builder.Services.Configure<TwilioSettings>(builder.Configuration.GetSection("Twilio"));
+builder.Services.AddSingleton<MySqlDbLoggingInterceptor>();
+
+builder.Services.AddDbContext<AppDbContext>((sp, options) =>
+{
+    options.UseMySql(
+        builder.Configuration.GetConnectionString("Default"),
+        ServerVersion.AutoDetect(builder.Configuration.GetConnectionString("Default"))
+    );
+
+    options.AddInterceptors(
+        sp.GetRequiredService<MySqlDbLoggingInterceptor>()
+    );
+});
 
 // WhatsApp service
 builder.Services.AddSingleton<WhatsAppService>();

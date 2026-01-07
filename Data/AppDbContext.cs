@@ -21,6 +21,8 @@ namespace AllulExpressApi.Data
         public DbSet<Posts> Posts { get; set; }
         public DbSet<ValidToken> ValidTokens { get; set; }
         public DbSet<ValidTokenClients> ValidTokenClients { get; set; }
+        public DbSet<DbLog> DbLogs { get; set; }
+
 
 
 
