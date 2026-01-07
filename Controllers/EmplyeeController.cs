@@ -20,8 +20,20 @@ public class EmployeesController : ControllerBase
 
     // POST: api/employees
     [HttpPost("addemployee")]
-    public async Task<ActionResult<Employees>> AddEmployee([FromBody] Employees employee)
+    public async Task<ActionResult<Employees>> AddEmployee([FromBody] Employees employee, [FromServices] IPermissionService permissionService)
     {
+
+        int userId = User.GetUserId();
+
+        var hasPermission = await permissionService.HasPermissionAsync(
+            userId, "USER_UPDATE"
+        );
+
+        if (!hasPermission)
+            return StatusCode(403, new { message = "Permission denied" });
+
+
+
         if (!ModelState.IsValid)
             return BadRequest(ModelState);
 

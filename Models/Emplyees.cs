@@ -29,7 +29,7 @@ namespace AllulExpressApi.Models
         public int RoleId { get; set; }
 
         [ForeignKey("RoleId")]
-        public Role? RoleNavigation { get; set; }
+        public Role RoleNavigation { get; set; } = null!;
 
     }
 }

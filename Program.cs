@@ -47,6 +47,8 @@ builder.Services.Configure<TwilioSettings>(builder.Configuration.GetSection("Twi
 // WhatsApp service
 builder.Services.AddSingleton<WhatsAppService>();
 builder.Services.AddScoped<QrCodeService>();
+builder.Services.AddScoped<IPermissionService, PermissionService>();
+
 
 builder.Services.AddScoped<TokenService>();
 builder.Services.AddControllers();
