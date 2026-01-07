@@ -18,8 +18,18 @@ public class ClientController : ControllerBase
 
     // GET: api/client
     [HttpGet("allclients")]
-    public async Task<ActionResult<IEnumerable<object>>> GetClients()
+    public async Task<ActionResult<IEnumerable<object>>> GetClients([FromServices] IPermissionService permissionService)
     {
+
+
+        int userId = User.GetUserId();
+
+        var hasPermission = await permissionService.HasPermissionAsync(
+            userId, "USER_VIEW"
+        );
+
+        if (!hasPermission)
+            return StatusCode(403, new { message = "Permission denied" });
         var clients = await _context.Clients
             .Include(c => c.Posts) // optional, only if you need some info from posts
             .Select(c => new
@@ -44,8 +54,17 @@ public class ClientController : ControllerBase
 
     // GET: api/client/5
     [HttpGet("getclient/{id}")]
-    public async Task<ActionResult<Clients>> GetClient(int id)
+    public async Task<ActionResult<Clients>> GetClient(int id, [FromServices] IPermissionService permissionService)
     {
+
+        int userId = User.GetUserId();
+
+        var hasPermission = await permissionService.HasPermissionAsync(
+            userId, "USER_VIEW"
+        );
+
+        if (!hasPermission)
+            return StatusCode(403, new { message = "Permission denied" });
         var client = await _context.Clients
             .Include(c => c.Posts)
             .FirstOrDefaultAsync(c => c.Id == id);
@@ -58,8 +77,20 @@ public class ClientController : ControllerBase
 
     // POST: api/client
     [HttpPost("addclients")]
-    public async Task<ActionResult<Clients>> AddClient([FromBody] Clients client)
+    public async Task<ActionResult<Clients>> AddClient([FromBody] Clients client, [FromServices] IPermissionService permissionService)
     {
+
+
+        int userId = User.GetUserId();
+
+        var hasPermission = await permissionService.HasPermissionAsync(
+            userId, "USER_CREATE"
+        );
+
+        if (!hasPermission)
+            return StatusCode(403, new { message = "Permission denied" });
+
+
         if (!ModelState.IsValid)
             return BadRequest(ModelState);
 
@@ -80,8 +111,18 @@ public class ClientController : ControllerBase
 
     // PUT: api/client/5
     [HttpPut("updateclient/{id}")]
-    public async Task<IActionResult> UpdateClient(int id, [FromBody] Clients updated)
+    public async Task<IActionResult> UpdateClient(int id, [FromBody] Clients updated, [FromServices] IPermissionService permissionService)
     {
+
+
+        int userId = User.GetUserId();
+
+        var hasPermission = await permissionService.HasPermissionAsync(
+            userId, "USER_UPDATE"
+        );
+
+        if (!hasPermission)
+            return StatusCode(403, new { message = "Permission denied" });
         if (id != updated.Id)
             return BadRequest(new { message = "ID mismatch" });
 
@@ -117,8 +158,17 @@ public class ClientController : ControllerBase
 
     // PUT: api/client/5/enable
     [HttpPost("toggle-status/{id}/toggle")]
-    public async Task<IActionResult> ToggleClient(int id)
+    public async Task<IActionResult> ToggleClient(int id, [FromServices] IPermissionService permissionService)
     {
+
+        int userId = User.GetUserId();
+
+        var hasPermission = await permissionService.HasPermissionAsync(
+            userId, "USER_ENABLE"
+        );
+
+        if (!hasPermission)
+            return StatusCode(403, new { message = "Permission denied" });
         var client = await _context.Clients.FindAsync(id);
         if (client == null)
             return NotFound(new { message = "Client not found" });

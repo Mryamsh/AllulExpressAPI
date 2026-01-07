@@ -21,8 +21,16 @@ public class PostsController : ControllerBase
 
     // ✅ Get all posts (with client info)
     [HttpGet("getposts")]
-    public async Task<ActionResult<IEnumerable<Posts>>> GetAllPosts()
+    public async Task<ActionResult<IEnumerable<Posts>>> GetAllPosts([FromServices] IPermissionService permissionService)
     {
+        int userId = User.GetUserId();
+
+        var hasPermission = await permissionService.HasPermissionAsync(
+            userId, "POSTS_VIEW"
+        );
+
+        if (!hasPermission)
+            return StatusCode(403, new { message = "Permission denied" });
         var posts = await _context.Posts
             // .Include(p => p.Client)
             // .Include(p => p.driver)
@@ -45,8 +53,16 @@ public class PostsController : ControllerBase
 
     // ✅ Get post by ID
     [HttpGet("getpost/{id}")]
-    public async Task<ActionResult<Posts>> GetPostById(int id)
+    public async Task<ActionResult<Posts>> GetPostById(int id, [FromServices] IPermissionService permissionService)
     {
+        int userId = User.GetUserId();
+
+        var hasPermission = await permissionService.HasPermissionAsync(
+            userId, "POSTS_VIEW"
+        );
+
+        if (!hasPermission)
+            return StatusCode(403, new { message = "Permission denied" });
         var post = await _context.Posts
             .Include(p => p.Client)
             .Include(p => p.driver)
@@ -60,8 +76,16 @@ public class PostsController : ControllerBase
 
 
     [HttpPost("addposts")]
-    public async Task<ActionResult<Posts>> CreatePost([FromBody] Posts post)
+    public async Task<ActionResult<Posts>> CreatePost([FromBody] Posts post, [FromServices] IPermissionService permissionService)
     {
+        int userId = User.GetUserId();
+
+        var hasPermission = await permissionService.HasPermissionAsync(
+            userId, "POSTS_CREATE"
+        );
+
+        if (!hasPermission)
+            return StatusCode(403, new { message = "Permission denied" });
         //  1. Validate Client
         var client = await _context.Clients.FindAsync(post.ClientId);
         if (client == null)
@@ -99,8 +123,17 @@ public class PostsController : ControllerBase
 
     //  Update post
     [HttpPut("updatepost/{id}")]
-    public async Task<IActionResult> UpdatePost(int id, [FromBody] Posts updatedPost)
+    public async Task<IActionResult> UpdatePost(int id, [FromBody] Posts updatedPost, [FromServices] IPermissionService permissionService)
     {
+
+        int userId = User.GetUserId();
+
+        var hasPermission = await permissionService.HasPermissionAsync(
+            userId, "POSTS_UPDATE"
+        );
+
+        if (!hasPermission)
+            return StatusCode(403, new { message = "Permission denied" });
         if (id != updatedPost.Id)
             return BadRequest(new { message = "ID mismatch" });
 
@@ -143,8 +176,16 @@ public class PostsController : ControllerBase
 
     // ✅ Get posts by client ID
     [HttpGet("client/{clientId}")]
-    public async Task<ActionResult<IEnumerable<Posts>>> GetPostsByClient(int clientId)
+    public async Task<ActionResult<IEnumerable<Posts>>> GetPostsByClient(int clientId, [FromServices] IPermissionService permissionService)
     {
+        int userId = User.GetUserId();
+
+        var hasPermission = await permissionService.HasPermissionAsync(
+            userId, "POSTS_VIEW"
+        );
+
+        if (!hasPermission)
+            return StatusCode(403, new { message = "Permission denied" });
         var clientExists = await _context.Clients.AnyAsync(c => c.Id == clientId);
         if (!clientExists)
             return NotFound(new { message = "Client not found" });
@@ -158,6 +199,7 @@ public class PostsController : ControllerBase
     [HttpGet("posts/counts")]
     public async Task<IActionResult> GetPostCounts()
     {
+
         var allCount = await _context.Posts.CountAsync();
         var todaysPostsCount = await _context.Posts
             .Where(p => p.Savedate.Date == DateTime.UtcNow.Date)
@@ -184,8 +226,16 @@ public class PostsController : ControllerBase
         return Ok(result);
     }
     [HttpGet("posts/filter/{filterName}")]
-    public async Task<IActionResult> GetPostsByFilter(string filterName)
+    public async Task<IActionResult> GetPostsByFilter(string filterName, [FromServices] IPermissionService permissionService)
     {
+        int userId = User.GetUserId();
+
+        var hasPermission = await permissionService.HasPermissionAsync(
+            userId, "POSTS_VIEW"
+        );
+
+        if (!hasPermission)
+            return StatusCode(403, new { message = "Permission denied" });
         IQueryable<Posts> query = _context.Posts;
 
         switch (filterName.ToLower())

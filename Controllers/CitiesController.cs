@@ -18,8 +18,16 @@ public class CityController : ControllerBase
 
 
     [HttpGet("allcities")]
-    public async Task<ActionResult<IEnumerable<Cities>>> GetAllCityFees()
+    public async Task<ActionResult<IEnumerable<Cities>>> GetAllCityFees([FromServices] IPermissionService permissionService)
     {
+        int userId = User.GetUserId();
+
+        var hasPermission = await permissionService.HasPermissionAsync(
+            userId, "CITY_VIEW"
+        );
+
+        if (!hasPermission)
+            return StatusCode(403, new { message = "Permission denied" });
         var cityFees = await _context.Cities
             .Include(c => c.Drivers)
             .ToListAsync();
@@ -27,8 +35,16 @@ public class CityController : ControllerBase
     }
 
     [HttpGet("getcity/{id}")]
-    public async Task<ActionResult<Cities>> GetCityFee(int id)
+    public async Task<ActionResult<Cities>> GetCityFee(int id, [FromServices] IPermissionService permissionService)
     {
+        int userId = User.GetUserId();
+
+        var hasPermission = await permissionService.HasPermissionAsync(
+            userId, "CITY_VIEW"
+        );
+
+        if (!hasPermission)
+            return StatusCode(403, new { message = "Permission denied" });
         var cityFee = await _context.Cities
             .Include(c => c.Drivers)
             .FirstOrDefaultAsync(c => c.Id == id);
@@ -41,8 +57,16 @@ public class CityController : ControllerBase
 
 
     [HttpPost("addcity")]
-    public async Task<ActionResult<Cities>> AddCityFee([FromBody] Cities newCityFee)
+    public async Task<ActionResult<Cities>> AddCityFee([FromBody] Cities newCityFee, [FromServices] IPermissionService permissionService)
     {
+        int userId = User.GetUserId();
+
+        var hasPermission = await permissionService.HasPermissionAsync(
+            userId, "CITY_CREATE"
+        );
+
+        if (!hasPermission)
+            return StatusCode(403, new { message = "Permission denied" });
         if (!ModelState.IsValid)
             return BadRequest(ModelState);
 
@@ -53,8 +77,16 @@ public class CityController : ControllerBase
     }
 
     [HttpPut("update/{id}")]
-    public async Task<IActionResult> UpdateCityFee(int id, [FromBody] Cities updated)
+    public async Task<IActionResult> UpdateCityFee(int id, [FromBody] Cities updated, [FromServices] IPermissionService permissionService)
     {
+        int userId = User.GetUserId();
+
+        var hasPermission = await permissionService.HasPermissionAsync(
+            userId, "CITY_UPDATE"
+        );
+
+        if (!hasPermission)
+            return StatusCode(403, new { message = "Permission denied" });
         if (id != updated.Id)
             return BadRequest(new { message = "ID mismatch" });
 

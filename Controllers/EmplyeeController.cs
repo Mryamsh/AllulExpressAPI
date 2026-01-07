@@ -26,7 +26,7 @@ public class EmployeesController : ControllerBase
         int userId = User.GetUserId();
 
         var hasPermission = await permissionService.HasPermissionAsync(
-            userId, "USER_UPDATE"
+            userId, "USER_CREATE"
         );
 
         if (!hasPermission)
@@ -79,8 +79,17 @@ public class EmployeesController : ControllerBase
     }
 
     [HttpGet("getEmployee/{id}")]
-    public async Task<ActionResult> GetEmployee(int id)
+    public async Task<ActionResult> GetEmployee(int id, [FromServices] IPermissionService permissionService)
     {
+        int userId = User.GetUserId();
+
+        var hasPermission = await permissionService.HasPermissionAsync(
+            userId, "USER_VIEW"
+        );
+
+        if (!hasPermission)
+            return StatusCode(403, new { message = "Permission denied" });
+
         var employee = await _context.Employees
             .Include(e => e.RoleNavigation) // include role
             .AsNoTracking()
@@ -109,8 +118,17 @@ public class EmployeesController : ControllerBase
 
 
     [HttpGet("getemployees")]
-    public async Task<ActionResult> GetAllEmployees()
+    public async Task<ActionResult> GetAllEmployees([FromServices] IPermissionService permissionService)
     {
+
+        int userId = User.GetUserId();
+
+        var hasPermission = await permissionService.HasPermissionAsync(
+            userId, "USER_VIEW"
+        );
+
+        if (!hasPermission)
+            return StatusCode(403, new { message = "Permission denied" });
         var employees = await _context.Employees
             .Include(e => e.RoleNavigation) // include role from Roles table
             .AsNoTracking()
@@ -133,8 +151,18 @@ public class EmployeesController : ControllerBase
 
 
     [HttpPut("updateEmployee/{id}")]
-    public async Task<IActionResult> UpdateEmployee(int id, [FromBody] Employees updatedEmployee)
+    public async Task<IActionResult> UpdateEmployee(int id, [FromBody] Employees updatedEmployee, [FromServices] IPermissionService permissionService)
     {
+
+
+        int userId = User.GetUserId();
+
+        var hasPermission = await permissionService.HasPermissionAsync(
+            userId, "USER_UPDATE"
+        );
+
+        if (!hasPermission)
+            return StatusCode(403, new { message = "Permission denied" });
         if (id != updatedEmployee.Id)
             return BadRequest(new { message = "ID mismatch" });
 
@@ -177,9 +205,20 @@ public class EmployeesController : ControllerBase
     [HttpPost("toggle-status/{id}")]
     public async Task<IActionResult> ToggleClientStatus(
         int id,
-        [FromBody] bool enabled
+        [FromBody] bool enabled, [FromServices] IPermissionService permissionService
     )
     {
+
+
+        int userId = User.GetUserId();
+
+        var hasPermission = await permissionService.HasPermissionAsync(
+            userId, "USER_ENABLE"
+        );
+
+        if (!hasPermission)
+            return StatusCode(403, new { message = "Permission denied" });
+
         var employee = await _context.Employees.FindAsync(id);
         if (employee == null)
             return NotFound(new { message = "Employee not found" });

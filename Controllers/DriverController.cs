@@ -16,8 +16,16 @@ public class DriversController : ControllerBase
 
     // ✅ GET all drivers
     [HttpGet("getdrivers")]
-    public async Task<ActionResult<IEnumerable<Drivers>>> GetDrivers()
+    public async Task<ActionResult<IEnumerable<Drivers>>> GetDrivers([FromServices] IPermissionService permissionService)
     {
+        int userId = User.GetUserId();
+
+        var hasPermission = await permissionService.HasPermissionAsync(
+            userId, "USER_VIEW"
+        );
+
+        if (!hasPermission)
+            return StatusCode(403, new { message = "Permission denied" });
         var drivers = await _context.Drivers
             .Include(d => d.Cities)
              .Select(d => new
@@ -39,8 +47,16 @@ public class DriversController : ControllerBase
 
     // ✅ GET driver by id
     [HttpGet("getdriver/{id}")]
-    public async Task<ActionResult<Drivers>> GetDriver(int id)
+    public async Task<ActionResult<Drivers>> GetDriver(int id, [FromServices] IPermissionService permissionService)
     {
+        int userId = User.GetUserId();
+
+        var hasPermission = await permissionService.HasPermissionAsync(
+            userId, "USER_VIEW"
+        );
+
+        if (!hasPermission)
+            return StatusCode(403, new { message = "Permission denied" });
         var driver = await _context.Drivers
             .Include(d => d.Cities)
             .FirstOrDefaultAsync(d => d.Id == id);
@@ -54,8 +70,17 @@ public class DriversController : ControllerBase
     //  POST: add new driver
 
     [HttpPost("adddriver")]
-    public async Task<ActionResult<Drivers>> AddDriver([FromBody] Drivers driver)
+    public async Task<ActionResult<Drivers>> AddDriver([FromBody] Drivers driver, [FromServices] IPermissionService permissionService)
     {
+
+        int userId = User.GetUserId();
+
+        var hasPermission = await permissionService.HasPermissionAsync(
+            userId, "USER_CREATE"
+        );
+
+        if (!hasPermission)
+            return StatusCode(403, new { message = "Permission denied" });
         if (!ModelState.IsValid)
             return BadRequest(ModelState);
 
@@ -93,8 +118,18 @@ public class DriversController : ControllerBase
     //  PUT: update driver
 
     [HttpPut("updateDriver/{id}")]
-    public async Task<IActionResult> UpdateDriver(int id, [FromBody] Drivers updated)
+    public async Task<IActionResult> UpdateDriver(int id, [FromBody] Drivers updated, [FromServices] IPermissionService permissionService)
     {
+
+
+        int userId = User.GetUserId();
+
+        var hasPermission = await permissionService.HasPermissionAsync(
+            userId, "USER_UPDATE"
+        );
+
+        if (!hasPermission)
+            return StatusCode(403, new { message = "Permission denied" });
         if (id != updated.Id)
             return BadRequest(new { message = "ID mismatch" });
 
@@ -147,8 +182,19 @@ public class DriversController : ControllerBase
 
 
     [HttpGet("drivers-by-city/{cityName}")]
-    public async Task<IActionResult> GetDriversByCity(string cityName)
+    public async Task<IActionResult> GetDriversByCity(string cityName, [FromServices] IPermissionService permissionService)
     {
+
+        int userId = User.GetUserId();
+
+        var hasPermission = await permissionService.HasPermissionAsync(
+            userId, "USER_VIEW"
+        );
+
+        if (!hasPermission)
+            return StatusCode(403, new { message = "Permission denied" });
+
+
         var drivers = await _context.Drivers
             .Where(d => d.Cities.Any(c => c.City == cityName))
             .Select(d => new
@@ -168,9 +214,17 @@ public class DriversController : ControllerBase
     [HttpPost("toggle-status/{id}")]
     public async Task<IActionResult> ToggleDriver(
       int id,
-      [FromBody] bool enabled
+      [FromBody] bool enabled, [FromServices] IPermissionService permissionService
   )
     {
+        int userId = User.GetUserId();
+
+        var hasPermission = await permissionService.HasPermissionAsync(
+            userId, "USER_ENABLE"
+        );
+
+        if (!hasPermission)
+            return StatusCode(403, new { message = "Permission denied" });
         var driver = await _context.Drivers.FindAsync(id);
         if (driver == null)
             return NotFound();
@@ -180,9 +234,19 @@ public class DriversController : ControllerBase
 
         return Ok(new { driver.Id, driver.Enabled });
     }
+
+
     [HttpGet("location/{id}")]
-    public async Task<IActionResult> GetDriverById(int id)
+    public async Task<IActionResult> GetDriverById(int id, [FromServices] IPermissionService permissionService)
     {
+        int userId = User.GetUserId();
+
+        var hasPermission = await permissionService.HasPermissionAsync(
+            userId, "DRIVER_LOCATION_VIEW"
+        );
+
+        if (!hasPermission)
+            return StatusCode(403, new { message = "Permission denied" });
         var driver = await _context.Drivers
             .Where(d => d.Id == id)
             .Select(d => new

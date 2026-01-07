@@ -19,8 +19,18 @@ public class UploadController : ControllerBase
     }
 
     [HttpPost("upload-image")]
-    public async Task<IActionResult> UploadImage([FromForm] IFormFile file)
+    public async Task<IActionResult> UploadImage([FromForm] IFormFile file, [FromServices] IPermissionService permissionService)
     {
+
+        int userId = User.GetUserId();
+
+        var hasPermission = await permissionService.HasPermissionAsync(
+            userId, "USER_CREATE"
+        );
+
+        if (!hasPermission)
+            return StatusCode(403, new { message = "Permission denied" });
+
         if (file == null || file.Length == 0)
             return BadRequest(new { message = "No file uploaded" });
 
@@ -55,8 +65,11 @@ public class UploadController : ControllerBase
 
 
     [HttpGet("getimage/{filename}")]
-    public IActionResult GetImage(string filename)
+    public IActionResult GetImage(string filename, [FromServices] IPermissionService permissionService)
     {
+
+
+
         var uploadsPath = Path.Combine(_env.ContentRootPath, "ProtectedUploads", filename);
         if (!System.IO.File.Exists(uploadsPath))
             return NotFound();
