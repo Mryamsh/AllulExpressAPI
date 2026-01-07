@@ -20,17 +20,17 @@ public class EmployeesController : ControllerBase
 
     // POST: api/employees
     [HttpPost("addemployee")]
-    public async Task<ActionResult<Employees>> AddEmployee([FromBody] Employees employee, [FromServices] IPermissionService permissionService)
+    public async Task<ActionResult<Employees>> AddEmployee([FromBody] Employees employee)
     {
+        //, [FromServices] IPermissionService permissionService
+        // int userId = User.GetUserId();
 
-        int userId = User.GetUserId();
+        // var hasPermission = await permissionService.HasPermissionAsync(
+        //     userId, "USER_UPDATE"
+        // );
 
-        var hasPermission = await permissionService.HasPermissionAsync(
-            userId, "USER_UPDATE"
-        );
-
-        if (!hasPermission)
-            return StatusCode(403, new { message = "Permission denied" });
+        // if (!hasPermission)
+        //     return StatusCode(403, new { message = "Permission denied" });
 
 
 
