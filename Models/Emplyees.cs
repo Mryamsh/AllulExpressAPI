@@ -1,5 +1,6 @@
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
+using System.Text.Json.Serialization;
 
 namespace AllulExpressApi.Models
 {
@@ -28,6 +29,7 @@ namespace AllulExpressApi.Models
         [Column("role_id")]
         public int RoleId { get; set; }
 
+        [JsonIgnore]
         [ForeignKey("RoleId")]
         public Role RoleNavigation { get; set; } = null!;
 
