@@ -29,9 +29,9 @@ namespace AllulExpressApi.Models
         [Column("role_id")]
         public int RoleId { get; set; }
 
-        [JsonIgnore]
+        //[JsonIgnore]
         [ForeignKey("RoleId")]
-        public Role RoleNavigation { get; set; } = null!;
+        public Role? RoleNavigation { get; set; } = null!;
 
     }
 }
