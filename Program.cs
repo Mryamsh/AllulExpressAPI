@@ -57,6 +57,7 @@ builder.Services.AddDbContext<AppDbContext>((sp, options) =>
     );
 });
 
+
 // WhatsApp service
 builder.Services.AddSingleton<WhatsAppService>();
 builder.Services.AddScoped<QrCodeService>();
