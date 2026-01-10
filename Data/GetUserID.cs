@@ -1,3 +1,4 @@
+using System.Security.Claims;
 using AllulExpressApi.Data;
 
 public class CurrentUserMiddleware
@@ -13,14 +14,15 @@ public class CurrentUserMiddleware
     {
         if (context.User.Identity?.IsAuthenticated == true)
         {
-            var userIdClaim = context.User.FindFirst("id"); // or ClaimTypes.NameIdentifier
+            var userIdClaim = context.User.FindFirst(ClaimTypes.NameIdentifier);
 
-            if (userIdClaim != null)
+            if (userIdClaim != null && int.TryParse(userIdClaim.Value, out int userId))
             {
-                db.CurrentUserId = int.Parse(userIdClaim.Value);
+                db.CurrentUserId = userId;
             }
         }
 
         await _next(context);
     }
+
 }

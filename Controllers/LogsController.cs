@@ -75,6 +75,7 @@ public class MySqlDbLoggingInterceptor : SaveChangesInterceptor
                     UserId = context is AppDbContext appDb
                     ? appDb.CurrentUserId
                      : null,
+
                     KeyValues = JsonSerializer.Serialize(
                         entry.Properties
                             .Where(p => p.Metadata.IsPrimaryKey())
