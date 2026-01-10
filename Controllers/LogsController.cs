@@ -1,4 +1,5 @@
 using System.Text.Json;
+using System.Runtime.CompilerServices;
 using AllulExpressApi.Data;
 using AllulExpressApi.Models;
 using Microsoft.EntityFrameworkCore;
@@ -7,7 +8,10 @@ using Microsoft.EntityFrameworkCore.Diagnostics;
 public class MySqlDbLoggingInterceptor : SaveChangesInterceptor
 {
     private readonly IServiceProvider _serviceProvider;
-    private List<DbLog> _pendingLogs = new();
+
+    // ✅ SAFE storage per DbContext
+    private static readonly ConditionalWeakTable<DbContext, List<DbLog>> _logsTable
+        = new();
 
     public MySqlDbLoggingInterceptor(IServiceProvider serviceProvider)
     {
@@ -18,22 +22,50 @@ public class MySqlDbLoggingInterceptor : SaveChangesInterceptor
         DbContextEventData eventData,
         InterceptionResult<int> result)
     {
-        var context = eventData.Context;
-        if (context == null) return result;
+        CollectLogs(eventData.Context);
+        return result;
+    }
 
-        _pendingLogs.Clear();
+    public override ValueTask<InterceptionResult<int>> SavingChangesAsync(
+        DbContextEventData eventData,
+        InterceptionResult<int> result,
+        CancellationToken cancellationToken = default)
+    {
+        CollectLogs(eventData.Context);
+        return ValueTask.FromResult(result);
+    }
+
+    public override int SavedChanges(
+        SaveChangesCompletedEventData eventData,
+        int result)
+    {
+        PersistLogs(eventData.Context);
+        return result;
+    }
+
+    public override ValueTask<int> SavedChangesAsync(
+        SaveChangesCompletedEventData eventData,
+        int result,
+        CancellationToken cancellationToken = default)
+    {
+        PersistLogs(eventData.Context);
+        return ValueTask.FromResult(result);
+    }
+
+    private void CollectLogs(DbContext? context)
+    {
+        if (context == null) return;
+
+        var logs = new List<DbLog>();
 
         foreach (var entry in context.ChangeTracker.Entries())
         {
-            // ⛔ skip logging tables
             if (entry.Entity is DbLog || entry.Entity is ValidToken)
                 continue;
 
-            if (entry.State == EntityState.Added ||
-                entry.State == EntityState.Modified ||
-                entry.State == EntityState.Deleted)
+            if (entry.State is EntityState.Added or EntityState.Modified or EntityState.Deleted)
             {
-                _pendingLogs.Add(new DbLog
+                logs.Add(new DbLog
                 {
                     TableName = entry.Metadata.GetTableName(),
                     Action = entry.State.ToString().ToUpper(),
@@ -55,23 +87,25 @@ public class MySqlDbLoggingInterceptor : SaveChangesInterceptor
             }
         }
 
-        return result;
+        if (logs.Count > 0)
+        {
+            _logsTable.Remove(context); // prevent duplicates
+            _logsTable.Add(context, logs);
+        }
     }
 
-    public override int SavedChanges(
-        SaveChangesCompletedEventData eventData,
-        int result)
+    private void PersistLogs(DbContext? context)
     {
-        if (!_pendingLogs.Any())
-            return result;
+        if (context == null) return;
+        if (!_logsTable.TryGetValue(context, out var logs)) return;
+        if (logs.Count == 0) return;
 
         using var scope = _serviceProvider.CreateScope();
         var db = scope.ServiceProvider.GetRequiredService<AppDbContext>();
 
-        db.DbLogs.AddRange(_pendingLogs);
-        db.SaveChanges();   // ✅ SAFE HERE
+        db.DbLogs.AddRange(logs);
+        db.SaveChanges();
 
-        _pendingLogs.Clear();
-        return result;
+        _logsTable.Remove(context);
     }
 }
