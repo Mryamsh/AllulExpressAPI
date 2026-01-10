@@ -54,6 +54,8 @@ public class MySqlDbLoggingInterceptor : SaveChangesInterceptor
 
     private void CollectLogs(DbContext? context)
     {
+
+        Console.WriteLine("here log");
         if (context == null) return;
 
         var logs = new List<DbLog>();
@@ -69,6 +71,10 @@ public class MySqlDbLoggingInterceptor : SaveChangesInterceptor
                 {
                     TableName = entry.Metadata.GetTableName(),
                     Action = entry.State.ToString().ToUpper(),
+
+                    UserId = context is AppDbContext appDb
+                    ? appDb.CurrentUserId
+                     : null,
                     KeyValues = JsonSerializer.Serialize(
                         entry.Properties
                             .Where(p => p.Metadata.IsPrimaryKey())

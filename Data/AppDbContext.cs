@@ -6,6 +6,7 @@ namespace AllulExpressApi.Data
     public class AppDbContext : DbContext
     {
 
+        public int? CurrentUserId { get; set; }
 
         public AppDbContext(DbContextOptions<AppDbContext> options) : base(options)
         {

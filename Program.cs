@@ -95,7 +95,7 @@ app.UseCors("AllowAll");
 
 app.UseAuthentication();
 app.UseAuthorization();
-
+app.UseMiddleware<CurrentUserMiddleware>();
 
 app.MapControllers();
 app.MapGet("/", () => "AllulExpressAPI is running!");
