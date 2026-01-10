@@ -1,11 +1,13 @@
 using System.Text.Json;
 using AllulExpressApi.Data;
+using AllulExpressApi.Models;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Diagnostics;
 
 public class MySqlDbLoggingInterceptor : SaveChangesInterceptor
 {
     private readonly IServiceProvider _serviceProvider;
+    private List<DbLog> _pendingLogs = new();
 
     public MySqlDbLoggingInterceptor(IServiceProvider serviceProvider)
     {
@@ -16,29 +18,22 @@ public class MySqlDbLoggingInterceptor : SaveChangesInterceptor
         DbContextEventData eventData,
         InterceptionResult<int> result)
     {
-        Console.WriteLine("DB LOG INTERCEPTOR HIT");
+        var context = eventData.Context;
+        if (context == null) return result;
 
-        WriteLogs(eventData.Context);
-        return result;
-    }
-
-    private void WriteLogs(DbContext context)
-    {
-        Console.WriteLine("DB LOG INTERCEPTOR HIT");
-
-        if (context == null) return;
-
-        var logs = new List<DbLog>();
+        _pendingLogs.Clear();
 
         foreach (var entry in context.ChangeTracker.Entries())
         {
-            if (entry.Entity is DbLog) continue;
+            // ⛔ skip logging tables
+            if (entry.Entity is DbLog || entry.Entity is ValidToken)
+                continue;
 
             if (entry.State == EntityState.Added ||
                 entry.State == EntityState.Modified ||
                 entry.State == EntityState.Deleted)
             {
-                logs.Add(new DbLog
+                _pendingLogs.Add(new DbLog
                 {
                     TableName = entry.Metadata.GetTableName(),
                     Action = entry.State.ToString().ToUpper(),
@@ -60,12 +55,23 @@ public class MySqlDbLoggingInterceptor : SaveChangesInterceptor
             }
         }
 
-        if (!logs.Any()) return;
+        return result;
+    }
+
+    public override int SavedChanges(
+        SaveChangesCompletedEventData eventData,
+        int result)
+    {
+        if (!_pendingLogs.Any())
+            return result;
 
         using var scope = _serviceProvider.CreateScope();
         var db = scope.ServiceProvider.GetRequiredService<AppDbContext>();
 
-        db.DbLogs.AddRange(logs);
-        db.SaveChanges();
+        db.DbLogs.AddRange(_pendingLogs);
+        db.SaveChanges();   // ✅ SAFE HERE
+
+        _pendingLogs.Clear();
+        return result;
     }
 }
