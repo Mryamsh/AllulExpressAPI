@@ -12,13 +12,18 @@ var key = System.Text.Encoding.ASCII.GetBytes(jwtSettings["Key"]);
 // Add services
 var connectionString = builder.Configuration.GetConnectionString("Default");
 
-builder.Services.AddDbContext<AppDbContext>(options =>
+
+builder.Services.AddDbContext<AppDbContext>((sp, options) =>
+{
     options.UseMySql(
         connectionString,
-        new MySqlServerVersion(new Version(8, 0, 34))
-    )
-);
+        new MySqlServerVersion(new Version(8, 0, 34)) // ✅ NO AutoDetect
+    );
 
+    options.AddInterceptors(
+        sp.GetRequiredService<MySqlDbLoggingInterceptor>()
+    );
+});
 
 builder.Services.AddAuthentication(options =>
 {
@@ -50,17 +55,7 @@ builder.Services.AddDataProtection();
 builder.Services.Configure<TwilioSettings>(builder.Configuration.GetSection("Twilio"));
 builder.Services.AddSingleton<MySqlDbLoggingInterceptor>();
 
-builder.Services.AddDbContext<AppDbContext>((sp, options) =>
-{
-    options.UseMySql(
-        builder.Configuration.GetConnectionString("Default"),
-        ServerVersion.AutoDetect(builder.Configuration.GetConnectionString("Default"))
-    );
 
-    options.AddInterceptors(
-        sp.GetRequiredService<MySqlDbLoggingInterceptor>()
-    );
-});
 
 
 
