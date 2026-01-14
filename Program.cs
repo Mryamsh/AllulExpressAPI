@@ -10,9 +10,14 @@ var jwtSettings = builder.Configuration.GetSection("Jwt");
 var key = System.Text.Encoding.ASCII.GetBytes(jwtSettings["Key"]);
 #pragma warning restore CS8604 // Possible null reference argument.
 // Add services
+var connectionString = builder.Configuration.GetConnectionString("Default");
+
 builder.Services.AddDbContext<AppDbContext>(options =>
-    options.UseMySql(builder.Configuration.GetConnectionString("Default"),
-    ServerVersion.AutoDetect(builder.Configuration.GetConnectionString("Default"))));
+    options.UseMySql(
+        connectionString,
+        new MySqlServerVersion(new Version(8, 0, 34))
+    )
+);
 
 
 builder.Services.AddAuthentication(options =>
