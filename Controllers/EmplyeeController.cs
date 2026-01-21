@@ -117,53 +117,26 @@ public class EmployeesController : ControllerBase
     }
 
     // GET: api/employee/getemployees?page=1
+
     [HttpGet("getemployees")]
-    public async Task<IActionResult> GetAllEmployees(
-        [FromServices] IPermissionService permissionService,
-        [FromQuery] int page = 1
-    )
+    public async Task<ActionResult> GetAllEmployees([FromServices] IPermissionService permissionService)
     {
-        const int pageSize = 10;
-
         int userId = User.GetUserId();
-
         var hasPermission = await permissionService.HasPermissionAsync(userId, "USER_VIEW");
-        if (!hasPermission)
-            return StatusCode(403, new { message = "Permission denied" });
-
-        if (page < 1) page = 1;
-
-        var totalCount = await _context.Employees.CountAsync();
-
-        var employees = await _context.Employees
-            .OrderBy(e => e.Id) // ensures stable pagination
-            .Skip((page - 1) * pageSize)
-            .Take(pageSize)
-            .Include(e => e.RoleNavigation)
-            .AsNoTracking()
-            .Select(e => new
-            {
-                e.Id,
-                e.Name,
-                e.Email,
-                RoleId = e.RoleId,
-                RoleName = e.RoleNavigation != null ? e.RoleNavigation.Name : null,
-                e.Phonenum1,
-                e.Phonenum2,
-                e.Language
-            })
-            .ToListAsync();
-
-        return Ok(new
-        {
-            page,
-            pageSize,
-            totalCount,
-            totalPages = (int)Math.Ceiling(totalCount / (double)pageSize),
-            data = employees
-        });
+        if (!hasPermission) return StatusCode(403, new { message = "Permission denied" });
+        var employees = await _context.Employees.Include(e => e.RoleNavigation)
+    .AsNoTracking().Select(e => new
+    {
+        e.Id,
+        e.Name,
+        e.Email,
+        RoleId = e.RoleId,
+        RoleName = e.RoleNavigation != null ? e.RoleNavigation.Name : null,
+        e.Phonenum1,
+        e.Phonenum2,
+        e.Language
+    }).ToListAsync(); return Ok(employees);
     }
-
 
 
 

@@ -18,50 +18,25 @@ public class ClientController : ControllerBase
 
     // GET: api/client/allclients?page=1
     [HttpGet("allclients")]
-    public async Task<IActionResult> GetClients(
-        [FromServices] IPermissionService permissionService,
-        [FromQuery] int page = 1
-    )
+    public async Task<ActionResult<IEnumerable<object>>> GetClients([FromServices] IPermissionService permissionService)
     {
-        const int pageSize = 10;
-
         int userId = User.GetUserId();
-
         var hasPermission = await permissionService.HasPermissionAsync(userId, "USER_VIEW");
-        if (!hasPermission)
-            return StatusCode(403, new { message = "Permission denied" });
-
-        if (page < 1) page = 1;
-
-        var totalCount = await _context.Clients.CountAsync();
-
-        var clients = await _context.Clients
-            .OrderBy(c => c.Id) // IMPORTANT for stable pagination
-            .Skip((page - 1) * pageSize)
-            .Take(pageSize)
-            .Select(c => new
-            {
-                c.Id,
-                c.Name,
-                c.Email,
-                c.Business,
-                c.Phonenum1,
-                c.Phonenum2,
-                c.Totalpaymentpayed,
-                c.Totalposts
-            })
-            .ToListAsync();
-
-        return Ok(new
+        if (!hasPermission) return StatusCode(403, new { message = "Permission denied" });
+        var clients = await _context.Clients.Include(c => c.Posts).Select(c => new
         {
-            page,
-            pageSize,
-            totalCount,
-            totalPages = (int)Math.Ceiling(totalCount / (double)pageSize),
-            data = clients
-        });
+            c.Id,
+            c.Name,
+            c.Email,
+            c.Business,
+            c.Phonenum1,
+            c.Phonenum2,
+            c.Totalpaymentpayed,
+            c.Totalposts,
+            //  PostCount = c.Posts.Count
+        }).ToListAsync();
+        return Ok(clients);
     }
-
 
 
     // GET: api/client/5
