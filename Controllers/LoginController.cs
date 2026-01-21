@@ -85,11 +85,11 @@ public class LoginController : ControllerBase
             return Unauthorized(new { valid = false, reason = "Token expired" });
 
 
-        var user = await _db.Employees
-      .FirstOrDefaultAsync(d => d.Id == tokenRecord.Id);
+        //     var user = await _db.Employees
+        //   .FirstOrDefaultAsync(d => d.Id == tokenRecord.Id);
 
-        if (user == null || !user.Enabled)
-            return Unauthorized(new { valid = false, reason = "User is disabled" });
+        //     if (user == null || !user.Enabled)
+        //         return Unauthorized(new { valid = false, reason = "User is disabled" });
 
         return Ok(new { valid = true });
     }
