@@ -14,36 +14,54 @@ public class DriversController : ControllerBase
         _context = context;
     }
 
-    // ✅ GET all drivers
+    // GET: api/driver/getdrivers?page=1
     [HttpGet("getdrivers")]
-    public async Task<ActionResult<IEnumerable<Drivers>>> GetDrivers([FromServices] IPermissionService permissionService)
+    public async Task<IActionResult> GetDrivers(
+        [FromServices] IPermissionService permissionService,
+        [FromQuery] int page = 1
+    )
     {
+        const int pageSize = 10;
+
         int userId = User.GetUserId();
 
-        var hasPermission = await permissionService.HasPermissionAsync(
-            userId, "USER_VIEW"
-        );
-
+        var hasPermission = await permissionService.HasPermissionAsync(userId, "USER_VIEW");
         if (!hasPermission)
             return StatusCode(403, new { message = "Permission denied" });
-        var drivers = await _context.Drivers
-            .Include(d => d.Cities)
-             .Select(d => new
-             {
-                 d.Id,
-                 d.Name,
-                 d.Email,
-                 d.Phonenum1,
-                 d.Phonenum2,
-                 d.Arrivedpost,
-                 d.Remainedpost,
-                 d.IsActive,
-                 d.Cities
 
-             })
+        if (page < 1) page = 1;
+
+        var totalCount = await _context.Drivers.CountAsync();
+
+        var drivers = await _context.Drivers
+            .OrderBy(d => d.Id) // REQUIRED for pagination stability
+            .Skip((page - 1) * pageSize)
+            .Take(pageSize)
+            .Include(d => d.Cities) // keep Include because you return Cities
+            .Select(d => new
+            {
+                d.Id,
+                d.Name,
+                d.Email,
+                d.Phonenum1,
+                d.Phonenum2,
+                d.Arrivedpost,
+                d.Remainedpost,
+                d.IsActive,
+                d.Cities
+            })
             .ToListAsync();
-        return Ok(drivers);
+
+        return Ok(new
+        {
+            page,
+            pageSize,
+            totalCount,
+            totalPages = (int)Math.Ceiling(totalCount / (double)pageSize),
+            data = drivers
+        });
     }
+
 
     // ✅ GET driver by id
     [HttpGet("getdriver/{id}")]
