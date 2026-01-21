@@ -21,19 +21,26 @@ public class PostsController : ControllerBase
 
     // ✅ Get all posts (with client info)
     [HttpGet("getposts")]
-    public async Task<ActionResult<IEnumerable<Posts>>> GetAllPosts([FromServices] IPermissionService permissionService)
+    public async Task<IActionResult> GetAllPosts(
+      [FromServices] IPermissionService permissionService,
+      [FromQuery] int page = 1,
+      [FromQuery] int pageSize = 10
+  )
     {
         int userId = User.GetUserId();
 
-        var hasPermission = await permissionService.HasPermissionAsync(
-            userId, "POSTS_VIEW"
-        );
-
+        var hasPermission = await permissionService.HasPermissionAsync(userId, "POSTS_VIEW");
         if (!hasPermission)
             return StatusCode(403, new { message = "Permission denied" });
+
+        if (page < 1) page = 1;
+
+        var totalCount = await _context.Posts.CountAsync();
+
         var posts = await _context.Posts
-            // .Include(p => p.Client)
-            // .Include(p => p.driver)
+            .OrderByDescending(p => p.Id) // important for stable pagination
+            .Skip((page - 1) * pageSize)
+            .Take(pageSize)
             .Select(p => new
             {
                 p.Id,
@@ -42,14 +49,19 @@ public class PostsController : ControllerBase
                 p.Phonenum1,
                 p.Phonenum2,
                 p.Exactaddress
-
-
             })
-
             .ToListAsync();
 
-        return Ok(posts);
+        return Ok(new
+        {
+            currentPage = page,
+            pageSize = pageSize,
+            totalItems = totalCount,
+            totalPages = (int)Math.Ceiling(totalCount / (double)pageSize),
+            data = posts
+        });
     }
+
 
     // ✅ Get post by ID
     [HttpGet("getpost/{id}")]
