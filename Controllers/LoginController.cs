@@ -30,7 +30,7 @@ public class LoginController : ControllerBase
         if (user == null)
         {
             // user not found
-            return Unauthorized(new { message = "Invalid phone or password" });
+            return Unauthorized(new { message = "Invalid phone" });
         }
 
         if (!user.Enabled) // or user.IsActive == false

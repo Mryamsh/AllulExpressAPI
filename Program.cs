@@ -17,7 +17,7 @@ builder.Services.AddDbContext<AppDbContext>((sp, options) =>
 {
     options.UseMySql(
         connectionString,
-        new MySqlServerVersion(new Version(8, 0, 34)) // ✅ NO AutoDetect
+        new MySqlServerVersion(new Version(8, 0, 34))
     );
 
     options.AddInterceptors(
@@ -41,6 +41,8 @@ builder.Services.AddAuthentication(options =>
         IssuerSigningKey = new SymmetricSecurityKey(key)
     };
 });
+
+
 builder.Services.AddCors(options =>
 {
     options.AddPolicy("AllowAll",
@@ -51,6 +53,10 @@ builder.Services.AddCors(options =>
                    .AllowAnyHeader();
         });
 });
+
+
+
+
 builder.Services.AddDataProtection();
 builder.Services.Configure<TwilioSettings>(builder.Configuration.GetSection("Twilio"));
 builder.Services.AddSingleton<MySqlDbLoggingInterceptor>();
@@ -66,10 +72,14 @@ builder.Services.AddScoped<IPermissionService, PermissionService>();
 
 
 builder.Services.AddScoped<TokenService>();
-builder.Services.AddControllers();
+
+
+
 builder.Services.AddEndpointsApiExplorer();
 
 builder.Services.AddSwaggerGen();
+
+
 builder.Services.AddControllers()
     .AddJsonOptions(options =>
     {
