@@ -19,7 +19,7 @@ public class PostsController : ControllerBase
         _qr = qr;
     }
 
-    // ✅ Get all posts (with client info)
+    //  Get all posts (with client info)
     [HttpGet("getposts")]
     public async Task<IActionResult> GetAllPosts(
       [FromServices] IPermissionService permissionService,
@@ -63,7 +63,7 @@ public class PostsController : ControllerBase
     }
 
 
-    // ✅ Get post by ID
+    //  Get post by ID
     [HttpGet("getpost/{id}")]
     public async Task<ActionResult<Posts>> GetPostById(int id, [FromServices] IPermissionService permissionService)
     {
@@ -172,7 +172,7 @@ public class PostsController : ControllerBase
         return Ok(post);
     }
 
-    // ✅ Delete post
+    // Delete post
     // [HttpDelete("{id}")]
     // public async Task<IActionResult> DeletePost(int id)
     // {
@@ -186,7 +186,7 @@ public class PostsController : ControllerBase
     //     return Ok(new { message = "Post deleted successfully" });
     // }
 
-    // ✅ Get posts by client ID
+    //  Get posts by client ID
     [HttpGet("client/{clientId}")]
     public async Task<ActionResult<IEnumerable<Posts>>> GetPostsByClient(int clientId, [FromServices] IPermissionService permissionService)
     {

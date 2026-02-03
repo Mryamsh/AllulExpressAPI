@@ -27,7 +27,7 @@ public class DriversController : ControllerBase
     }
 
 
-    // ✅ GET driver by id
+    //  GET driver by id
     [HttpGet("getdriver/{id}")]
     public async Task<ActionResult<Drivers>> GetDriver(int id, [FromServices] IPermissionService permissionService)
     {
@@ -141,7 +141,7 @@ public class DriversController : ControllerBase
         driver.Language = updated.Language;
 
 
-        // ✅ Update related cities safely
+        //  Update related cities safely
         if (updated.Cities != null && updated.Cities.Count > 0)
         {
             // Get existing city IDs
