@@ -104,7 +104,7 @@ public class PostsController : ControllerBase
             return BadRequest(new { message = "Invalid ClientId" });
 
         //  2. Set save date
-        post.Savedate = DateTime.UtcNow;
+        //   post.Savedate = DateTime.UtcNow;
 
         //  3. Add Post
         _context.Posts.Add(post);

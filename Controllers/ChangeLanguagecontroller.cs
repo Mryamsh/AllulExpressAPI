@@ -25,6 +25,7 @@ public class changelanguageController : ControllerBase
             return NotFound(new { message = "Employee not found" });
 
         user.Language = request.Language; // assuming "Language" column exists
+
         _db.Entry(user).State = EntityState.Modified;
 
         try
