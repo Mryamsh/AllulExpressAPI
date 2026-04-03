@@ -286,4 +286,27 @@ public class PostsController : ControllerBase
         return Ok(posts);
     }
 
+    [HttpGet("{postId}/logs")]
+    public async Task<IActionResult> GetPostLogs(int postId)
+    {
+        // Fetch logs where TableName is 'Posts' and KeyValues contains the postId
+        var logs = await _context.DbLogs
+            .Where(l => l.TableName == "Posts" && l.KeyValues.Contains($"\"Id\":{postId}"))
+            .OrderByDescending(l => l.CreatedAt)
+            .Select(l => new PostLogDto
+            {
+                Id = l.Id,
+                Action = l.Action,
+                OldValues = l.OldValues,
+                NewValues = l.NewValues,
+                UserId = l.UserId,
+                CreatedAt = l.CreatedAt
+            })
+            .ToListAsync();
+        if (logs.Count == 0)
+            return NotFound(new { message = "No logs found for this post." });
+
+        return Ok(logs);
+    }
+
 }

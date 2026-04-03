@@ -9,3 +9,12 @@ public class DbLog
     public int? UserId { get; set; }
     public DateTime CreatedAt { get; set; } = DateTime.UtcNow;
 }
+public class PostLogDto
+{
+    public int Id { get; set; }
+    public string Action { get; set; }
+    public string? OldValues { get; set; }
+    public string? NewValues { get; set; }
+    public int? UserId { get; set; }
+    public DateTime CreatedAt { get; set; }
+}
